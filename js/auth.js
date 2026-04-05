@@ -38,30 +38,46 @@ function handleLogout() {
 }
 
 // 4. Theo dõi trạng thái người dùng (Quan trọng nhất)
+// Trong js/auth.js
 auth.onAuthStateChanged(async (user) => {
-  const loggedOutUI = document.getElementById("user-logged-out");
-  const loggedInUI = document.getElementById("user-logged-in");
-  const emailDisplay = document.getElementById("user-email-display");
+    const authContainer = document.getElementById("auth-container");
+    const mainContent = document.getElementById("main-content");
+    const emailDisplay = document.getElementById("user-email-display");
 
-  if (user) {
-    // Khi đã đăng nhập
-    loggedOutUI.classList.add("hidden");
-    loggedInUI.classList.remove("hidden");
-    emailDisplay.innerText = user.email;
-
-    // Tải tiến độ từ Firebase (Hàm này sẽ viết ở app.js)
-    if (typeof loadProgressFromCloud === "function") {
-      await loadProgressFromCloud(user.uid);
+    if (user) {
+        // ĐÃ ĐĂNG NHẬP
+        authContainer.classList.add("hidden");
+        mainContent.classList.remove("hidden");
+        if (emailDisplay) emailDisplay.innerText = `Đang học: ${user.email}`;
+        
+        // Tải dữ liệu từ Firebase
+        const doc = await db.collection("users").doc(user.uid).get();
+        if (doc.exists && doc.data().learnedWords) {
+            state.learned = new Set(doc.data().learnedWords);
+        }
+        updateUI();
+    } else {
+        // CHƯA ĐĂNG NHẬP
+        authContainer.classList.remove("hidden");
+        mainContent.classList.add("hidden");
+        state.learned = new Set();
     }
-  } else {
-    // Khi đã đăng xuất
-    loggedOutUI.classList.remove("hidden");
-    loggedInUI.classList.add("hidden");
-
-    // Reset tiến độ về local hoặc trống
-    state.learned = new Set(
-      JSON.parse(localStorage.getItem("hsk1_learned")) || [],
-    );
-    if (typeof updateUI === "function") updateUI();
-  }
 });
+function toggleAuth(isLogin) {
+  const title = document.getElementById("auth-title");
+  const loginActions = document.getElementById("login-actions");
+  const signupActions = document.getElementById("signup-actions");
+  const errorEl = document.getElementById("auth-error");
+
+  errorEl.classList.add("hidden"); // Xóa thông báo lỗi cũ
+
+  if (isLogin) {
+    title.innerText = "Đăng nhập";
+    loginActions.classList.remove("hidden");
+    signupActions.classList.add("hidden");
+  } else {
+    title.innerText = "Đăng ký tài khoản";
+    loginActions.classList.add("hidden");
+    signupActions.classList.remove("hidden");
+  }
+}

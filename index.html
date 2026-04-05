@@ -1,267 +1,143 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HSK VCAB</title>
+    <title>HSK VOCAB - Học từ vựng thông minh</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body class="text-slate-800 bg-slate-50">
+    
     <nav class="bg-white shadow-sm border-b sticky top-0 z-50 py-4">
       <div class="max-w-4xl mx-auto px-4">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div
-              class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg"
-            >
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
               <i class="fas fa-book-open"></i>
             </div>
-            <div class="hidden sm:block">
+            <div>
               <h1 class="font-bold text-lg leading-none">HSK Vocab</h1>
               <span class="text-xs text-slate-500">Learning Platform</span>
             </div>
-            <select
-              id="course-selector"
-              onchange="changeCourse()"
-              class="ml-2 bg-slate-100 border-none rounded-lg text-sm font-semibold px-3 py-1.5 outline-none focus:ring-2 focus:ring-blue-500"
-            >
+            <select id="course-selector" onchange="changeCourse()" class="ml-2 bg-slate-100 border-none rounded-lg text-sm font-semibold px-3 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
               <option value="hsk1">HSK 1</option>
               <option value="hsk2">HSK 2</option>
               <option value="en_basic">English Basic</option>
             </select>
           </div>
 
-          <div class="flex bg-slate-100 p-1 rounded-lg">
-            <button
-              onclick="switchView('study')"
-              id="btn-study"
-              class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600"
-            >
-              Học tập
-            </button>
-            <button
-              onclick="switchView('list')"
-              id="btn-list"
-              class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600"
-            >
-              Danh sách
-            </button>
-          </div>
-        </div>
-
-        <div id="auth-section">
-          <div
-            id="user-logged-out"
-            class="bg-slate-50 p-4 rounded-2xl border border-slate-200"
-          >
-            <div class="flex flex-col md:flex-row items-center gap-3">
-              <span class="text-sm font-bold text-slate-600 whitespace-nowrap"
-                >Đăng nhập để lưu tiến độ:</span
-              >
-              <input
-                type="email"
-                id="email"
-                placeholder="Email"
-                class="w-full md:w-40 p-2 text-sm border rounded-xl outline-none"
-              />
-              <input
-                type="password"
-                id="password"
-                placeholder="Mật khẩu"
-                class="w-full md:w-40 p-2 text-sm border rounded-xl outline-none"
-              />
-              <div class="flex gap-2 w-full md:w-auto">
-                <button
-                  onclick="handleLogin()"
-                  class="flex-1 md:flex-none px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700"
-                >
-                  Đăng nhập
-                </button>
-                <button
-                  onclick="handleSignUp()"
-                  class="flex-1 md:flex-none px-4 py-2 bg-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-300"
-                >
-                  Đăng ký
-                </button>
-              </div>
-            </div>
-            <p
-              id="auth-error"
-              class="text-red-500 text-[10px] mt-2 hidden text-center md:text-left"
-            ></p>
-          </div>
-
-          <div
-            id="user-logged-in"
-            class="hidden bg-blue-600 p-3 rounded-2xl text-white flex items-center justify-between shadow-md"
-          >
-            <div class="flex items-center gap-3">
-              <div
-                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
-              >
-                <i class="fas fa-user-check text-sm"></i>
-              </div>
-              <span id="user-email-display" class="text-sm font-medium"></span>
-            </div>
-            <button
-              onclick="handleLogout()"
-              class="text-xs bg-white/20 px-3 py-1.5 rounded-lg font-bold hover:bg-white/30 transition-all"
-            >
-              Đăng xuất
-            </button>
+          <div id="nav-tabs" class="hidden flex bg-slate-100 p-1 rounded-lg">
+            <button onclick="switchView('study')" id="btn-study" class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600">Học tập</button>
+            <button onclick="switchView('list')" id="btn-list" class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600">Danh sách</button>
           </div>
         </div>
       </div>
     </nav>
 
     <main class="max-w-4xl mx-auto px-4 py-8">
-      <div id="view-study">
-        <div class="mb-8">
-          <div class="flex justify-between items-end mb-2">
-            <span
-              class="text-sm font-bold text-slate-500 uppercase tracking-wider"
-              >Tiến độ học tập</span
-            >
-            <span id="progress-text" class="text-sm font-bold text-blue-600"
-              >0/500</span
-            >
+      
+      <div id="auth-container" class="max-w-md mx-auto mt-10">
+        <div id="auth-form" class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+          <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center">Đăng nhập</h2>
+          <input type="email" id="email" placeholder="Email của bạn" class="w-full p-3 mb-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+          <input type="password" id="password" placeholder="Mật khẩu" class="w-full p-3 mb-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+          <p id="auth-error" class="text-red-500 text-sm mb-4 hidden"></p>
+          
+          <div id="login-actions" class="flex flex-col gap-3">
+            <button onclick="handleLogin()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Đăng nhập</button>
+            <p class="text-center text-sm text-slate-500">Chưa có tài khoản? <a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-bold">Đăng ký ngay</a></p>
           </div>
-          <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
-            <div
-              id="progress-bar"
-              class="bg-blue-500 h-full w-0 transition-all duration-500"
-            ></div>
+          
+          <div id="signup-actions" class="flex flex-col gap-3 hidden">
+            <button onclick="handleSignUp()" class="w-full py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700">Tạo tài khoản</button>
+            <p class="text-center text-sm text-slate-500">Đã có tài khoản? <a href="#" onclick="toggleAuth(true)" class="text-blue-600 font-bold">Quay lại Đăng nhập</a></p>
           </div>
         </div>
+      </div>
 
-        <div class="flex flex-col items-center">
-          <div
-            id="flashcard"
-            class="w-full max-w-md h-[400px] cursor-pointer"
-            onclick="toggleFlip()"
-          >
-            <div
-              class="card-inner relative w-full h-full text-center shadow-xl rounded-[2rem]"
-            >
-              <div
-                class="card-face absolute inset-0 bg-white border-4 border-red-50 flex flex-col items-center justify-center rounded-[2rem]"
-              >
-                <span class="absolute top-6 left-6 text-slate-300 font-bold"
-                  >#<span id="card-id">1</span></span
-                >
-                <h2
-                  id="card-hanzi"
-                  class="chinese-font text-8xl font-bold text-slate-800 mb-4"
-                ></h2>
-                <p
-                  id="card-pinyin"
-                  class="text-3xl text-blue-500 font-medium"
-                ></p>
-                <button
-                  onclick="
-                    event.stopPropagation();
-                    playAudio();
-                  "
-                  class="mt-6 w-12 h-12 rounded-full bg-red-50 text-blue-600 flex items-center justify-center hover:scale-110 transition-all"
-                >
-                  <i class="fas fa-volume-up"></i>
-                </button>
-              </div>
+      <div id="main-content" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+          <span id="user-email-display" class="text-sm font-medium text-slate-600"></span>
+          <button onclick="handleLogout()" class="text-sm text-red-500 font-bold hover:underline">
+            Đăng xuất <i class="fas fa-sign-out-alt ml-1"></i>
+          </button>
+        </div>
 
-              <div
-                class="card-face card-back absolute inset-0 bg-slate-900 text-white p-8 flex flex-col items-center justify-center rounded-[2rem]"
-              >
-                <h3 class="text-slate-500 uppercase text-xs font-bold mb-2">
-                  Nghĩa tiếng Việt
-                </h3>
-                <p
-                  id="card-meaning_vi"
-                  class="text-4xl font-bold mb-6 text-center"
-                ></p>
-                <div class="w-12 h-1 bg-blue-500 mb-6"></div>
-                <div class="flex flex-col items-center gap-2">
-                  <p
-                    id="card-example"
-                    class="chinese-font text-lg italic text-slate-300 px-4 text-center"
-                  ></p>
-                  <button
-                    onclick="
-                      event.stopPropagation();
-                      playExample();
-                    "
-                    class="mt-2 w-10 h-10 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center hover:text-white transition-all border border-slate-700"
-                  >
-                    <i class="fas fa-volume-up text-sm"></i>
-                  </button>
-                </div>
-              </div>
+        <div id="view-study">
+          <div class="mb-8">
+            <div class="flex justify-between items-end mb-2">
+              <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Tiến độ học tập</span>
+              <span id="progress-text" class="text-sm font-bold text-blue-600">0/0</span>
+            </div>
+            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div id="progress-bar" class="bg-blue-500 h-full w-0 transition-all duration-500"></div>
             </div>
           </div>
 
-          <div class="flex gap-4 mt-10">
-            <button
-              onclick="prevCard()"
-              class="px-6 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all font-bold shadow-sm"
-            >
-              <i class="fas fa-chevron-left mr-2"></i> Trước
-            </button>
-            <button
-              onclick="markLearned()"
-              class="px-8 py-3 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 shadow-lg transition-all"
-            >
-              Đã thuộc <i class="fas fa-check ml-2"></i>
-            </button>
-            <button
-              onclick="nextCard()"
-              class="px-6 py-3 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 transition-all font-bold shadow-lg"
-            >
-              Tiếp <i class="fas fa-chevron-right ml-2"></i>
-            </button>
+          <div class="flex flex-col items-center">
+            <div id="flashcard" class="w-full max-w-md h-[400px] cursor-pointer" onclick="toggleFlip()">
+              <div class="card-inner relative w-full h-full text-center shadow-xl rounded-[2rem]">
+                <div class="card-face absolute inset-0 bg-white border-4 border-red-50 flex flex-col items-center justify-center rounded-[2rem]">
+                  <span class="absolute top-6 left-6 text-slate-300 font-bold">#<span id="card-id">1</span></span>
+                  <h2 id="card-hanzi" class="chinese-font text-8xl font-bold text-slate-800 mb-4"></h2>
+                  <p id="card-pinyin" class="text-3xl text-blue-500 font-medium"></p>
+                  <button onclick="event.stopPropagation(); playAudio();" class="mt-6 w-12 h-12 rounded-full bg-red-50 text-blue-600 flex items-center justify-center hover:scale-110 transition-all">
+                    <i class="fas fa-volume-up"></i>
+                  </button>
+                </div>
+                <div class="card-face card-back absolute inset-0 bg-slate-900 text-white p-8 flex flex-col items-center justify-center rounded-[2rem]">
+                  <h3 class="text-slate-500 uppercase text-xs font-bold mb-2">Nghĩa tiếng Việt</h3>
+                  <p id="card-meaning_vi" class="text-4xl font-bold mb-6 text-center"></p>
+                  <div class="w-12 h-1 bg-blue-500 mb-6"></div>
+                  <div class="flex flex-col items-center gap-2">
+                    <p id="card-example" class="chinese-font text-lg italic text-slate-300 px-4 text-center"></p>
+                    <button onclick="event.stopPropagation(); playExample();" class="mt-2 w-10 h-10 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center hover:text-white transition-all border border-slate-700">
+                      <i class="fas fa-volume-up text-sm"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex gap-4 mt-10">
+              <button onclick="prevCard()" class="px-6 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all font-bold shadow-sm"><i class="fas fa-chevron-left mr-2"></i> Trước</button>
+              <button onclick="markAsLearned()" class="px-8 py-3 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 shadow-lg transition-all">Đã thuộc <i class="fas fa-check ml-2"></i></button>
+              <button onclick="nextCard()" class="px-6 py-3 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 transition-all font-bold shadow-lg">Tiếp <i class="fas fa-chevron-right ml-2"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-list" class="hidden">
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-4 border-b bg-slate-50 flex items-center gap-3">
+              <i class="fas fa-search text-slate-400 ml-2"></i>
+              <input type="text" id="search" oninput="handleSearch()" placeholder="Tìm kiếm từ vựng..." class="bg-transparent border-none focus:ring-0 w-full outline-none text-slate-700 font-medium" />
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto custom-scrollbar">
+              <table class="w-full text-left">
+                <thead class="bg-slate-50 text-xs text-slate-400 uppercase sticky top-0 shadow-sm">
+                  <tr>
+                    <th class="px-6 py-3">Từ hán</th>
+                    <th class="px-6 py-3">Pinyin</th>
+                    <th class="px-6 py-3">Nghĩa</th>
+                    <th class="px-6 py-3 text-right">Loa</th>
+                  </tr>
+                </thead>
+                <tbody id="list-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
-      <div id="view-list" class="hidden">
-        <div
-          class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-        >
-          <div class="p-4 border-b bg-slate-50 flex items-center gap-3">
-            <i class="fas fa-search text-slate-400 ml-2"></i>
-            <input
-              type="text"
-              id="search"
-              oninput="handleSearch()"
-              placeholder="Tìm kiếm từ vựng..."
-              class="bg-transparent border-none focus:ring-0 w-full outline-none text-slate-700 font-medium"
-            />
-          </div>
-          <div class="max-h-[60vh] overflow-y-auto custom-scrollbar">
-            <table class="w-full text-left">
-              <thead
-                class="bg-slate-50 text-xs text-slate-400 uppercase sticky top-0 shadow-sm"
-              >
-                <tr>
-                  <th class="px-6 py-3">Từ hán</th>
-                  <th class="px-6 py-3">Pinyin</th>
-                  <th class="px-6 py-3">Nghĩa</th>
-                  <th class="px-6 py-3 text-right">Loa</th>
-                </tr>
-              </thead>
-              <tbody id="list-body" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </main>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
     <script src="data.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>

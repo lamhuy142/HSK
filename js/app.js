@@ -1,5 +1,8 @@
 // ĐẢM BẢO DÒNG NÀY Ở TRÊN CÙNG FILE app.js
-let currentVocab = hsk1_vocab_full; // Hoặc hsk1_vocab_full tùy file data.js của bạn đặt tên là gì
+// 1. Phải khai báo biến này ở ngay đầu file app.js
+let currentVocab = []; 
+let currentIndex = 0;
+// let currentVocab = hsk1_vocab_full; // Hoặc hsk1_vocab_full tùy file data.js của bạn đặt tên là gì
 // Hàm này để lọc ra những từ chưa thuộc
 
 // Thêm "hsk1_" vào trước id của mỗi từ một cách tự động
@@ -156,36 +159,6 @@ async function markLearned() {
     }
   }
 }
-// async function markLearned() {
-//   const remaining = getRemainingWords();
-//   if (remaining.length === 0) return;
-
-//   const currentWord = remaining[state.currentIndex];
-
-//   // 1. Cập nhật local ngay lập tức (để web mượt)
-//   state.learned.add(currentWord.id);
-//   localStorage.setItem("hsk1_learned", JSON.stringify([...state.learned]));
-//   updateUI();
-
-//   // 2. Gửi lên Firebase sau (chạy ngầm)
-//   const user = auth.currentUser;
-//   if (user) {
-//     try {
-//       await db
-//         .collection("users")
-//         .doc(user.uid)
-//         .set(
-//           {
-//             learnedWords: Array.from(state.learned),
-//             lastUpdate: new Date(), // Thêm cái này để biết lần cuối học là khi nào
-//           },
-//           { merge: true },
-//         );
-//     } catch (e) {
-//       console.error("Không thể lưu lên Cloud:", e);
-//     }
-//   }
-// }
 
 // 3. Đừng quên hàm bổ trợ nếu bạn đang dùng nó trong updateUI
 function getRemainingWords() {
@@ -312,16 +285,19 @@ async function loadProgressFromCloud(uid) {
   }
 }
 // Lắng nghe trạng thái đăng nhập
-auth.onAuthStateChanged(async (user) => {
-    if (user) {
-        // Lấy dữ liệu đã thuộc từ Firestore
-        const doc = await db.collection("users").doc(user.uid).get();
-        if (doc.exists && doc.data().learnedWords) {
-            state.learned = new Set(doc.data().learnedWords);
-            console.log("Đã khôi phục tiến độ học tập!");
-        }
-    } else {
-        state.learned = new Set(); // Reset nếu đăng xuất
-    }
-    updateUI(); // Vẽ lại giao diện sau khi có dữ liệu
+firebase.auth().onAuthStateChanged((user) => {
+  const authContainer = document.getElementById("auth-container");
+  const mainContent = document.getElementById("main-content");
+
+  if (user) {
+    // Đã đăng nhập -> Hiện nội dung học, ẩn form login
+    authContainer.style.display = "none";
+    mainContent.style.display = "block";
+    // Sau đó mới gọi hàm lấy dữ liệu
+    loadData();
+  } else {
+    // Chưa đăng nhập -> Hiện form login, ẩn nội dung học
+    authContainer.style.display = "block";
+    mainContent.style.display = "none";
+  }
 });
