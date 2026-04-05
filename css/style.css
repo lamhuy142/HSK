@@ -1,0 +1,40 @@
+/* css/style.css */
+
+/* Import font từ Google */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Inter:wght@300;400;600&display=swap");
+
+body {
+    font-family: "Inter", sans-serif;
+    background-color: #f8fafc;
+}
+
+.chinese-font {
+    font-family: "Noto Sans SC", sans-serif;
+}
+
+.card-inner {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-face {
+    backface-visibility: hidden;
+    border-radius: 1.5rem;
+}
+
+.card-back {
+    transform: rotateY(180deg);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
