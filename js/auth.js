@@ -1,83 +1,132 @@
 // js/auth.js
 
-// 1. Đăng ký tài khoản mới
-async function handleSignUp() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const errorEl = document.getElementById("auth-error");
+console.log("File auth.js đã được nạp!");
 
-  try {
-    await auth.createUserWithEmailAndPassword(email, password);
-    alert("Đăng ký thành công! Chào mừng bạn.");
-  } catch (error) {
-    errorEl.innerText = "Lỗi đăng ký: " + error.message;
-    errorEl.classList.remove("hidden");
+auth.onAuthStateChanged(async (user) => {
+  console.log(
+    "Kiểm tra trạng thái User từ Firebase:",
+    user ? "Đã đăng nhập: " + user.email : "Chưa đăng nhập",
+  );
+
+  const authContainer = document.getElementById("auth-container");
+  const mainContent = document.getElementById("main-content");
+  const navTabs = document.getElementById("nav-tabs");
+
+  if (!authContainer || !mainContent) {
+    console.error(
+      "LỖI: Không tìm thấy ID 'auth-container' hoặc 'main-content' trong HTML. Hãy kiểm tra lại file index.html!",
+    );
+    return;
   }
-}
 
-// 2. Đăng nhập
-async function handleLogin() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const errorEl = document.getElementById("auth-error");
+  if (user) {
+    console.log("Đang mở khóa giao diện chính...");
+    // Ẩn form login
+    authContainer.style.setProperty("display", "none", "important");
+    // Hiện nội dung chính
+    mainContent.style.setProperty("display", "block", "important");
+
+    if (navTabs) navTabs.style.setProperty("display", "flex", "important");
+    // 1. Lấy dữ liệu từ Firestore
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    const userData = userDoc.data();
+
+    // 2. Cập nhật vào state của app.js
+    if (userData && userData.learnedWords) {
+      state.learned = new Set(userData.learnedWords);
+      // Lưu tạm vào local để app.js dùng
+      localStorage.setItem(
+        "hsk1_learned",
+        JSON.stringify(userData.learnedWords),
+      );
+    } else {
+      state.learned = new Set();
+      localStorage.setItem("hsk1_learned", JSON.stringify([]));
+    }
+    // THÊM DÒNG NÀY ĐỂ HIỆN CHỮ VÀ SỐ TIẾN ĐỘ
+    if (typeof updateUI === "function") {
+      console.log("Đang gọi updateUI()...");
+      updateUI();
+    }
+    // ... các dòng code còn lại giữ nguyên
+  } else {
+    console.log("Đang hiện form Đăng nhập...");
+    // Hiện form login
+    authContainer.style.setProperty("display", "block", "important");
+    // Ẩn nội dung chính
+    mainContent.style.setProperty("display", "none", "important");
+
+    if (navTabs) navTabs.style.setProperty("display", "none", "important");
+  }
+});
+
+// Các hàm xử lý nút bấm (Gán vào window để HTML gọi được)
+window.handleLogin = async function () {
+  const email = document.getElementById("email")?.value;
+  const password = document.getElementById("password")?.value;
+  if (!email || !password) return alert("Vui lòng nhập đủ email và mật khẩu");
 
   try {
     await auth.signInWithEmailAndPassword(email, password);
-    errorEl.classList.add("hidden");
-  } catch (error) {
-    errorEl.innerText = "Lỗi: " + error.message;
-    errorEl.classList.remove("hidden");
+  } catch (e) {
+    alert("Lỗi đăng nhập: " + e.message);
   }
-}
+};
 
-// 3. Đăng xuất
-function handleLogout() {
+window.handleLogout = function () {
   if (confirm("Bạn muốn đăng xuất?")) {
-    auth.signOut();
+    auth.signOut().then(() => {
+      localStorage.removeItem("hsk1_learned");
+      location.reload();
+    });
   }
-}
+};
+// js/auth.js
 
-// 4. Theo dõi trạng thái người dùng (Quan trọng nhất)
-// Trong js/auth.js
-auth.onAuthStateChanged(async (user) => {
-    const authContainer = document.getElementById("auth-container");
-    const mainContent = document.getElementById("main-content");
-    const emailDisplay = document.getElementById("user-email-display");
-
-    if (user) {
-        // ĐÃ ĐĂNG NHẬP
-        authContainer.classList.add("hidden");
-        mainContent.classList.remove("hidden");
-        if (emailDisplay) emailDisplay.innerText = `Đang học: ${user.email}`;
-        
-        // Tải dữ liệu từ Firebase
-        const doc = await db.collection("users").doc(user.uid).get();
-        if (doc.exists && doc.data().learnedWords) {
-            state.learned = new Set(doc.data().learnedWords);
-        }
-        updateUI();
-    } else {
-        // CHƯA ĐĂNG NHẬP
-        authContainer.classList.remove("hidden");
-        mainContent.classList.add("hidden");
-        state.learned = new Set();
-    }
-});
+// Hàm để chuyển đổi giữa màn hình Đăng nhập và Đăng ký
 function toggleAuth(isLogin) {
-  const title = document.getElementById("auth-title");
-  const loginActions = document.getElementById("login-actions");
-  const signupActions = document.getElementById("signup-actions");
-  const errorEl = document.getElementById("auth-error");
+    const authTitle = document.getElementById("auth-title");
+    const loginActions = document.getElementById("login-actions");
+    const signupActions = document.getElementById("signup-actions");
 
-  errorEl.classList.add("hidden"); // Xóa thông báo lỗi cũ
+    if (isLogin) {
+        authTitle.innerText = "Đăng nhập";
+        loginActions.classList.remove("hidden");
+        signupActions.classList.add("hidden");
+    } else {
+        authTitle.innerText = "Đăng ký tài khoản";
+        loginActions.classList.add("hidden");
+        signupActions.classList.remove("hidden");
+    }
+};
+// js/auth.js
 
-  if (isLogin) {
-    title.innerText = "Đăng nhập";
-    loginActions.classList.remove("hidden");
-    signupActions.classList.add("hidden");
-  } else {
-    title.innerText = "Đăng ký tài khoản";
-    loginActions.classList.add("hidden");
-    signupActions.classList.remove("hidden");
-  }
-}
+// Hàm xử lý Đăng ký tài khoản mới
+window.handleSignUp = async function() {
+    const email = document.getElementById("email")?.value || document.getElementById("email")?.value;
+    const password = document.getElementById("password")?.value || document.getElementById("password")?.value;
+
+    if (!email || !password) {
+        alert("Vui lòng nhập đầy đủ Email và Mật khẩu!");
+        return;
+    }
+
+    try {
+        console.log("Đang tiến hành tạo tài khoản...");
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        
+        // Tạo thêm một bản ghi cho user mới trong Firestore (nếu cần lưu từ vựng đã học)
+        const user = userCredential.user;
+        await db.collection("users").doc(user.uid).set({
+            email: user.email,
+            learnedWords: [],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert("Chúc mừng! Bạn đã đăng ký thành công.");
+        // Sau khi đăng ký thành công, Firebase sẽ tự động login và onAuthStateChanged sẽ lo phần còn lại
+    } catch (error) {
+        console.error("Lỗi đăng ký:", error);
+        alert("Lỗi: " + error.message);
+    }
+};

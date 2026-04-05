@@ -1,5 +1,5 @@
 // data.js
-const hsk1_vocab_full = [
+window.hsk1_vocab_full = [
   {
     id: 1,
     hanzi: "爱",

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HSK VOCAB - Học từ vựng thông minh</title>
+    <title>HSK VOCAB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/style.css" />
@@ -38,7 +38,7 @@
 
     <main class="max-w-4xl mx-auto px-4 py-8">
       
-      <div id="auth-container" class="max-w-md mx-auto mt-10">
+      <div id="auth-container" class="hidden max-w-md mx-auto mt-10">
         <div id="auth-form" class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
           <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center">Đăng nhập</h2>
           <input type="email" id="email" placeholder="Email của bạn" class="w-full p-3 mb-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <div id="main-content" class="hidden">
+      <div id="main-content"  class="hidden">
         <div class="flex justify-between items-center mb-6">
           <span id="user-email-display" class="text-sm font-medium text-slate-600"></span>
           <button onclick="handleLogout()" class="text-sm text-red-500 font-bold hover:underline">
@@ -80,7 +80,7 @@
             <div id="flashcard" class="w-full max-w-md h-[400px] cursor-pointer" onclick="toggleFlip()">
               <div class="card-inner relative w-full h-full text-center shadow-xl rounded-[2rem]">
                 <div class="card-face absolute inset-0 bg-white border-4 border-red-50 flex flex-col items-center justify-center rounded-[2rem]">
-                  <span class="absolute top-6 left-6 text-slate-300 font-bold">#<span id="card-id">1</span></span>
+                  <!-- <span class="absolute top-6 left-6 text-slate-300 font-bold">#<span id="card-id">1</span></span> -->
                   <h2 id="card-hanzi" class="chinese-font text-8xl font-bold text-slate-800 mb-4"></h2>
                   <p id="card-pinyin" class="text-3xl text-blue-500 font-medium"></p>
                   <button onclick="event.stopPropagation(); playAudio();" class="mt-6 w-12 h-12 rounded-full bg-red-50 text-blue-600 flex items-center justify-center hover:scale-110 transition-all">
@@ -140,7 +140,7 @@
     
     <script src="data.js"></script>
     <script src="js/firebase-config.js"></script>
-    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
   </body>
 </html>
