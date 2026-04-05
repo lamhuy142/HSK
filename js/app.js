@@ -1,7 +1,11 @@
+// ĐẢM BẢO DÒNG NÀY Ở TRÊN CÙNG FILE app.js
+let currentVocab = hsk1_vocab_full; // Hoặc hsk1_vocab_full tùy file data.js của bạn đặt tên là gì
+// Hàm này để lọc ra những từ chưa thuộc
+
 // Thêm "hsk1_" vào trước id của mỗi từ một cách tự động
-const hsk1_vocab = hsk1_vocab_full.map(word => ({
-    ...word,
-    id: `hsk1_${word.id}` 
+const hsk1_vocab = hsk1_vocab_full.map((word) => ({
+  ...word,
+  id: `hsk1_${word.id}`,
 }));
 
 // 1. Lấy dữ liệu đã thuộc từ localStorage
@@ -19,61 +23,92 @@ function getRemainingWords() {
   return remaining;
 }
 
+// 2. Hàm chuyển từ tiếp theo
+function nextCard() {
+  console.log("Đã bấm nút Tiếp!"); // Dòng này để kiểm tra trong Console
+  const remaining = getRemainingWords();
+
+  if (state.currentIndex < remaining.length - 1) {
+    state.currentIndex++;
+  } else {
+    state.currentIndex = 0;
+  }
+
+  updateUI(); // Gọi hàm này để vẽ lại chữ lên màn hình
+}
+
 function updateUI() {
   const remaining = getRemainingWords();
 
-  // Kiểm tra nếu đã thuộc hết sạch từ
+  // 1. Kiểm tra nếu đã thuộc hết
   if (remaining.length === 0) {
-    document.getElementById("view-study").innerHTML = `
-                <div class="flex flex-col items-center justify-center py-20 text-center">
-                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mb-4">
+    const studyView = document.getElementById("view-study");
+    if (studyView) {
+      studyView.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mb-4 shadow-inner">
                         <i class="fas fa-trophy"></i>
                     </div>
                     <h2 class="text-3xl font-bold text-slate-800 mb-2">Tuyệt vời!</h2>
-                    <p class="text-slate-500 mb-6">Bạn đã hoàn thành toàn bộ 500 từ HSK 1.</p>
-                    <button onclick="resetProgress()" class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all">
+                    <p class="text-slate-500 mb-6">Bạn đã chinh phục toàn bộ từ vựng mục này.</p>
+                    <button onclick="resetProgress()" class="px-8 py-3 bg-blue-600 text-white rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition-all hover:scale-105">
                         Học lại từ đầu
                     </button>
                 </div>`;
+    }
     return;
   }
 
-  // Đảm bảo index không bị vượt quá độ dài danh sách mới
+  // 2. Kiểm soát Index an toàn
   if (state.currentIndex >= remaining.length) {
     state.currentIndex = 0;
   }
 
   const word = remaining[state.currentIndex];
 
-  // Hiển thị nội dung lên Flashcard
-  document.getElementById("card-hanzi").innerText = word.hanzi;
-  document.getElementById("card-pinyin").innerText = word.pinyin;
-  document.getElementById("card-meaning_vi").innerText = word.meaning_vi;
-  document.getElementById("card-example").innerText = word.example;
-  document.getElementById("card-id").innerText = word.id;
+  // 3. Cập nhật nội dung (Dùng Optional Chaining để tránh lỗi null)
+  const elements = {
+    "card-hanzi": word.hanzi,
+    "card-pinyin": word.pinyin,
+    "card-meaning_vi": word.meaning_vi,
+    "card-example": word.example || "Chưa có ví dụ",
+    "card-id": `#${word.id}`, // Thêm dấu # cho chuyên nghiệp
+  };
 
-  // Cập nhật Progress Bar (tính trên tổng 500 từ ban đầu)
-  const total = hsk1_vocab.length;
-  const progress = (state.learned.size / total) * 100;
-  document.getElementById("progress-bar").style.width = `${progress}%`;
-  document.getElementById("progress-text").innerText =
-    `${state.learned.size}/${total}`;
+  for (let id in elements) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = elements[id];
+  }
 
-  document.getElementById("flashcard").classList.remove("flipped");
+  // 4. Cập nhật Tiến độ (Dựa trên danh sách từ hiện tại của khóa học)
+  // Giả sử 'currentVocab' là biến chứa danh sách từ của HSK đang chọn
+  const total = currentVocab.length;
+  const learnedCount = state.learned.size;
+  const progressPercent = (learnedCount / total) * 100;
+
+  const progressBar = document.getElementById("progress-bar");
+  const progressText = document.getElementById("progress-text");
+
+  if (progressBar) progressBar.style.width = `${progressPercent}%`;
+  if (progressText) progressText.innerText = `${learnedCount}/${total}`;
+
+  // 5. Luôn Reset mặt thẻ
+  const flashcard = document.getElementById("flashcard");
+  if (flashcard) flashcard.classList.remove("flipped");
 }
 
 // Hàm hợp nhất: Vừa lật thẻ, vừa tự động phát âm ví dụ ở mặt sau
 function toggleFlip() {
-    const card = document.getElementById("flashcard");
-    card.classList.toggle("flipped");
+  const card = document.getElementById("flashcard");
+  card.classList.toggle("flipped");
 
-    // Kiểm tra: Nếu thẻ đang ở mặt sau (có class flipped)
-    if (card.classList.contains("flipped")) {
-        // Nghỉ 300ms để hiệu ứng lật thẻ chạy xong rồi mới đọc ví dụ
-        setTimeout(() => {
-            playExample();
-        }, 300);
-    }
+  // Kiểm tra: Nếu thẻ đang ở mặt sau (có class flipped)
+  if (card.classList.contains("flipped")) {
+    // Nghỉ 300ms để hiệu ứng lật thẻ chạy xong rồi mới đọc ví dụ
+    setTimeout(() => {
+      playExample();
+    }, 300);
+  }
 }
 
 function prevCard() {
@@ -84,19 +119,20 @@ function prevCard() {
     updateUI();
   }
 }
-
 async function markLearned() {
   const remaining = getRemainingWords();
   if (remaining.length === 0) return;
 
   const currentWord = remaining[state.currentIndex];
 
-  // 1. Cập nhật local ngay lập tức (để web mượt)
+  // 1. Cập nhật local (Máy khách thấy mượt ngay)
   state.learned.add(currentWord.id);
   localStorage.setItem("hsk1_learned", JSON.stringify([...state.learned]));
+
+  // Cập nhật giao diện ngay lập tức
   updateUI();
 
-  // 2. Gửi lên Firebase sau (chạy ngầm)
+  // 2. Gửi lên Firebase (Chạy ngầm)
   const user = auth.currentUser;
   if (user) {
     try {
@@ -105,15 +141,56 @@ async function markLearned() {
         .doc(user.uid)
         .set(
           {
-            learnedWords: Array.from(state.learned),
-            lastUpdate: new Date(), // Thêm cái này để biết lần cuối học là khi nào
+            // Chỉ gửi thêm ID mới vào mảng, không gửi lại cả danh sách cũ
+            learnedWords: firebase.firestore.FieldValue.arrayUnion(
+              currentWord.id,
+            ),
+            lastUpdate: firebase.firestore.FieldValue.serverTimestamp(), // Dùng thời gian của server sẽ chuẩn hơn
           },
           { merge: true },
         );
+
+      console.log("Đã đồng bộ từ vựng lên Cloud!");
     } catch (e) {
-      console.error("Không thể lưu lên Cloud:", e);
+      console.error("Lỗi đồng bộ Cloud:", e);
     }
   }
+}
+// async function markLearned() {
+//   const remaining = getRemainingWords();
+//   if (remaining.length === 0) return;
+
+//   const currentWord = remaining[state.currentIndex];
+
+//   // 1. Cập nhật local ngay lập tức (để web mượt)
+//   state.learned.add(currentWord.id);
+//   localStorage.setItem("hsk1_learned", JSON.stringify([...state.learned]));
+//   updateUI();
+
+//   // 2. Gửi lên Firebase sau (chạy ngầm)
+//   const user = auth.currentUser;
+//   if (user) {
+//     try {
+//       await db
+//         .collection("users")
+//         .doc(user.uid)
+//         .set(
+//           {
+//             learnedWords: Array.from(state.learned),
+//             lastUpdate: new Date(), // Thêm cái này để biết lần cuối học là khi nào
+//           },
+//           { merge: true },
+//         );
+//     } catch (e) {
+//       console.error("Không thể lưu lên Cloud:", e);
+//     }
+//   }
+// }
+
+// 3. Đừng quên hàm bổ trợ nếu bạn đang dùng nó trong updateUI
+function getRemainingWords() {
+  // Trả về những từ chưa nằm trong danh sách "đã thuộc"
+  return currentVocab.filter((word) => !state.learned.has(word.id));
 }
 
 function resetProgress() {
@@ -221,16 +298,30 @@ function playExample() {
 window.onload = updateUI;
 // Hàm tải tiến độ từ Cloud về máy
 async function loadProgressFromCloud(uid) {
-    try {
-        const doc = await db.collection("users").doc(uid).get();
-        if (doc.exists && doc.data().learnedWords) {
-            // Cập nhật vào state và đồng bộ luôn localStorage cho chắc
-            state.learned = new Set(doc.data().learnedWords);
-            localStorage.setItem("hsk1_learned", JSON.stringify([...state.learned]));
-            updateUI();
-            console.log("Đã đồng bộ tiến độ từ Cloud!");
-        }
-    } catch (error) {
-        console.error("Lỗi khi tải tiến độ:", error);
+  try {
+    const doc = await db.collection("users").doc(uid).get();
+    if (doc.exists && doc.data().learnedWords) {
+      // Cập nhật vào state và đồng bộ luôn localStorage cho chắc
+      state.learned = new Set(doc.data().learnedWords);
+      localStorage.setItem("hsk1_learned", JSON.stringify([...state.learned]));
+      updateUI();
+      console.log("Đã đồng bộ tiến độ từ Cloud!");
     }
+  } catch (error) {
+    console.error("Lỗi khi tải tiến độ:", error);
+  }
 }
+// Lắng nghe trạng thái đăng nhập
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        // Lấy dữ liệu đã thuộc từ Firestore
+        const doc = await db.collection("users").doc(user.uid).get();
+        if (doc.exists && doc.data().learnedWords) {
+            state.learned = new Set(doc.data().learnedWords);
+            console.log("Đã khôi phục tiến độ học tập!");
+        }
+    } else {
+        state.learned = new Set(); // Reset nếu đăng xuất
+    }
+    updateUI(); // Vẽ lại giao diện sau khi có dữ liệu
+});

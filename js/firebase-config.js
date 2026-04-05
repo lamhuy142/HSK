@@ -1,4 +1,4 @@
-// Cấu hình Firebase kiểu truyền thống (Compat)
+// js/firebase-config.js
 const firebaseConfig = {
   apiKey: "AIzaSyC-TG7caE-zrdPAbo_83y5iL8IeQnN5YWQ",
   authDomain: "hsk-vocab-c2c20.firebaseapp.com",
@@ -9,7 +9,7 @@ const firebaseConfig = {
   measurementId: "G-RD6TR1NGMP",
 };
 
-// Khởi tạo
+// Khởi tạo Firebase kiểu Compat (Để các file auth.js và app.js dùng chung được)
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
