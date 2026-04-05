@@ -3,56 +3,123 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HSK 1 Mới (500 Từ) - HSK 3.0 Full</title>
+    <title>HSK VCAB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="css/style.css">
-
-</head>
-<body class="text-slate-800">
+    <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body class="text-slate-800">
-    <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
-      <div
-        class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between"
-      >
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg"
-          >
-            <i class="fas fa-book-open"></i>
+  <body class="text-slate-800 bg-slate-50">
+    <nav class="bg-white shadow-sm border-b sticky top-0 z-50 py-4">
+      <div class="max-w-4xl mx-auto px-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg"
+            >
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div class="hidden sm:block">
+              <h1 class="font-bold text-lg leading-none">HSK Vocab</h1>
+              <span class="text-xs text-slate-500">Learning Platform</span>
+            </div>
+            <select
+              id="course-selector"
+              onchange="changeCourse()"
+              class="ml-2 bg-slate-100 border-none rounded-lg text-sm font-semibold px-3 py-1.5 outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="hsk1">HSK 1</option>
+              <option value="hsk2">HSK 2</option>
+              <option value="en_basic">English Basic</option>
+            </select>
           </div>
-          <div>
-            <h1 class="font-bold text-lg leading-none">HSK 1</h1>
-            <span class="text-xs text-slate-500">Full 500 Words Database</span>
+
+          <div class="flex bg-slate-100 p-1 rounded-lg">
+            <button
+              onclick="switchView('study')"
+              id="btn-study"
+              class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600"
+            >
+              Học tập
+            </button>
+            <button
+              onclick="switchView('list')"
+              id="btn-list"
+              class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600"
+            >
+              Danh sách
+            </button>
           </div>
         </div>
-        <div class="flex bg-slate-100 p-1 rounded-lg">
-          <button
-            onclick="switchView('study')"
-            id="btn-study"
-            class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600"
+
+        <div id="auth-section">
+          <div
+            id="user-logged-out"
+            class="bg-slate-50 p-4 rounded-2xl border border-slate-200"
           >
-            Học tập
-          </button>
-          <button
-            onclick="switchView('list')"
-            id="btn-list"
-            class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600"
+            <div class="flex flex-col md:flex-row items-center gap-3">
+              <span class="text-sm font-bold text-slate-600 whitespace-nowrap"
+                >Đăng nhập để lưu tiến độ:</span
+              >
+              <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                class="w-full md:w-40 p-2 text-sm border rounded-xl outline-none"
+              />
+              <input
+                type="password"
+                id="password"
+                placeholder="Mật khẩu"
+                class="w-full md:w-40 p-2 text-sm border rounded-xl outline-none"
+              />
+              <div class="flex gap-2 w-full md:w-auto">
+                <button
+                  onclick="handleLogin()"
+                  class="flex-1 md:flex-none px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700"
+                >
+                  Đăng nhập
+                </button>
+                <button
+                  onclick="handleSignUp()"
+                  class="flex-1 md:flex-none px-4 py-2 bg-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-300"
+                >
+                  Đăng ký
+                </button>
+              </div>
+            </div>
+            <p
+              id="auth-error"
+              class="text-red-500 text-[10px] mt-2 hidden text-center md:text-left"
+            ></p>
+          </div>
+
+          <div
+            id="user-logged-in"
+            class="hidden bg-blue-600 p-3 rounded-2xl text-white flex items-center justify-between shadow-md"
           >
-            Danh sách
-          </button>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+              >
+                <i class="fas fa-user-check text-sm"></i>
+              </div>
+              <span id="user-email-display" class="text-sm font-medium"></span>
+            </div>
+            <button
+              onclick="handleLogout()"
+              class="text-xs bg-white/20 px-3 py-1.5 rounded-lg font-bold hover:bg-white/30 transition-all"
+            >
+              Đăng xuất
+            </button>
+          </div>
         </div>
       </div>
     </nav>
 
     <main class="max-w-4xl mx-auto px-4 py-8">
-      <!-- Study Mode -->
       <div id="view-study">
         <div class="mb-8">
           <div class="flex justify-between items-end mb-2">
@@ -82,7 +149,7 @@
               class="card-inner relative w-full h-full text-center shadow-xl rounded-[2rem]"
             >
               <div
-                class="card-face absolute inset-0 bg-white border-4 border-red-50 flex flex-col items-center justify-center"
+                class="card-face absolute inset-0 bg-white border-4 border-red-50 flex flex-col items-center justify-center rounded-[2rem]"
               >
                 <span class="absolute top-6 left-6 text-slate-300 font-bold"
                   >#<span id="card-id">1</span></span
@@ -105,25 +172,22 @@
                   <i class="fas fa-volume-up"></i>
                 </button>
               </div>
+
               <div
-                class="card-face card-back absolute inset-0 bg-slate-900 text-white p-8 flex flex-col items-center justify-center"
+                class="card-face card-back absolute inset-0 bg-slate-900 text-white p-8 flex flex-col items-center justify-center rounded-[2rem]"
               >
                 <h3 class="text-slate-500 uppercase text-xs font-bold mb-2">
                   Nghĩa tiếng Việt
                 </h3>
-                <p id="card-meaning_vi" class="text-4xl font-bold mb-6"></p>
-                <div class="w-12 h-1 bg-blue-500 mb-6"></div>
                 <p
-                  id="card-example"
-                  class="chinese-font text-lg italic text-slate-300 px-4"
+                  id="card-meaning_vi"
+                  class="text-4xl font-bold mb-6 text-center"
                 ></p>
-                <p id="card-meaning_vi" class="text-4xl font-bold mb-6"></p>
                 <div class="w-12 h-1 bg-blue-500 mb-6"></div>
-
                 <div class="flex flex-col items-center gap-2">
                   <p
                     id="card-example"
-                    class="chinese-font text-lg italic text-slate-300 px-4"
+                    class="chinese-font text-lg italic text-slate-300 px-4 text-center"
                   ></p>
                   <button
                     onclick="
@@ -154,7 +218,7 @@
             </button>
             <button
               onclick="nextCard()"
-              class="px-6 py-3 rounded-2xl bg-blue-600 text-white hover:bg-red-700 transition-all font-bold shadow-lg"
+              class="px-6 py-3 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 transition-all font-bold shadow-lg"
             >
               Tiếp <i class="fas fa-chevron-right ml-2"></i>
             </button>
@@ -162,7 +226,6 @@
         </div>
       </div>
 
-      <!-- List Mode -->
       <div id="view-list" class="hidden">
         <div
           class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
@@ -173,7 +236,7 @@
               type="text"
               id="search"
               oninput="handleSearch()"
-              placeholder="Tìm kiếm 500 từ vựng..."
+              placeholder="Tìm kiếm từ vựng..."
               class="bg-transparent border-none focus:ring-0 w-full outline-none text-slate-700 font-medium"
             />
           </div>
@@ -195,242 +258,13 @@
         </div>
       </div>
     </main>
-    <script src="data.js"></script>
-    <script>
-      const hsk1_vocab = hsk1_vocab_full;
 
-      // 1. Lấy dữ liệu đã thuộc từ localStorage
-      const savedLearned =
-        JSON.parse(localStorage.getItem("hsk1_learned")) || [];
-
-      const state = {
-        currentIndex: 0,
-        learned: new Set(savedLearned),
-        view: "study",
-      };
-
-      // 2. Hàm quan trọng: Lọc ra danh sách các từ CHƯA THUỘC
-      function getRemainingWords() {
-        const remaining = hsk1_vocab.filter(
-          (word) => !state.learned.has(word.id),
-        );
-        return remaining;
-      }
-
-      function updateUI() {
-        const remaining = getRemainingWords();
-
-        // Kiểm tra nếu đã thuộc hết sạch từ
-        if (remaining.length === 0) {
-          document.getElementById("view-study").innerHTML = `
-                <div class="flex flex-col items-center justify-center py-20 text-center">
-                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mb-4">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Tuyệt vời!</h2>
-                    <p class="text-slate-500 mb-6">Bạn đã hoàn thành toàn bộ 500 từ HSK 1.</p>
-                    <button onclick="resetProgress()" class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all">
-                        Học lại từ đầu
-                    </button>
-                </div>`;
-          return;
-        }
-
-        // Đảm bảo index không bị vượt quá độ dài danh sách mới
-        if (state.currentIndex >= remaining.length) {
-          state.currentIndex = 0;
-        }
-
-        const word = remaining[state.currentIndex];
-
-        // Hiển thị nội dung lên Flashcard
-        document.getElementById("card-hanzi").innerText = word.hanzi;
-        document.getElementById("card-pinyin").innerText = word.pinyin;
-        document.getElementById("card-meaning_vi").innerText = word.meaning_vi;
-        document.getElementById("card-example").innerText = word.example;
-        document.getElementById("card-id").innerText = word.id;
-
-        // Cập nhật Progress Bar (tính trên tổng 500 từ ban đầu)
-        const total = hsk1_vocab.length;
-        const progress = (state.learned.size / total) * 100;
-        document.getElementById("progress-bar").style.width = `${progress}%`;
-        document.getElementById("progress-text").innerText =
-          `${state.learned.size}/${total}`;
-
-        document.getElementById("flashcard").classList.remove("flipped");
-      }
-
-      function toggleFlip() {
-        document.getElementById("flashcard").classList.toggle("flipped");
-      }
-
-      function nextCard() {
-        const remaining = getRemainingWords();
-        if (remaining.length > 0) {
-          state.currentIndex = (state.currentIndex + 1) % remaining.length;
-          updateUI();
-        }
-      }
-
-      function prevCard() {
-        const remaining = getRemainingWords();
-        if (remaining.length > 0) {
-          state.currentIndex =
-            (state.currentIndex - 1 + remaining.length) % remaining.length;
-          updateUI();
-        }
-      }
-
-      function markLearned() {
-        const remaining = getRemainingWords();
-        if (remaining.length > 0) {
-          const currentWord = remaining[state.currentIndex];
-
-          // Thêm ID từ vào danh sách đã thuộc
-          state.learned.add(currentWord.id);
-
-          // Lưu vào máy (localStorage)
-          localStorage.setItem(
-            "hsk1_learned",
-            JSON.stringify([...state.learned]),
-          );
-
-          // Không cần tăng currentIndex vì từ vừa học đã bị xóa khỏi danh sách remaining
-          updateUI();
-        }
-      }
-
-      function resetProgress() {
-        if (
-          confirm("Bạn có chắc chắn muốn xóa hết tiến độ và học lại từ đầu?")
-        ) {
-          localStorage.removeItem("hsk1_learned");
-          location.reload();
-        }
-      }
-
-      function switchView(view) {
-        state.view = view;
-        document
-          .getElementById("view-study")
-          .classList.toggle("hidden", view !== "study");
-        document
-          .getElementById("view-list")
-          .classList.toggle("hidden", view !== "list");
-
-        const btnStudy = document.getElementById("btn-study");
-        const btnList = document.getElementById("btn-list");
-
-        if (view === "study") {
-          btnStudy.className =
-            "px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600";
-          btnList.className =
-            "px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600";
-          updateUI(); // Cập nhật lại giao diện học khi quay lại
-        } else {
-          btnList.className =
-            "px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600";
-          btnStudy.className =
-            "px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600";
-          renderList(hsk1_vocab);
-        }
-      }
-
-      function renderList(data) {
-        const container = document.getElementById("list-body");
-        container.innerHTML = data
-          .map(
-            (w) => `
-            <tr class="hover:bg-slate-50 ${state.learned.has(w.id) ? "opacity-40" : ""}">
-                <td class="px-6 py-4 font-bold chinese-font text-xl text-slate-700">
-                    ${w.hanzi} ${state.learned.has(w.id) ? '<i class="fas fa-check-circle text-green-500 text-sm"></i>' : ""}
-                </td>
-                <td class="px-6 py-4 text-blue-500 font-medium">${w.pinyin}</td>
-                <td class="px-6 py-4 text-slate-500 text-sm">${w.meaning_vi}</td>
-                <td class="px-6 py-4 text-right">
-                    <button onclick="speak('${w.hanzi}')" class="text-slate-300 hover:text-blue-500 transition-colors">
-                        <i class="fas fa-volume-up"></i>
-                    </button>
-                </td>
-            </tr>
-        `,
-          )
-          .join("");
-      }
-
-      function handleSearch() {
-        const q = document.getElementById("search").value.toLowerCase();
-        const filtered = hsk1_vocab.filter(
-          (w) =>
-            w.hanzi.includes(q) ||
-            w.pinyin.toLowerCase().includes(q) ||
-            w.meaning_vi.toLowerCase().includes(q),
-        );
-        renderList(filtered);
-      }
-
-      function speak(text) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "zh-CN";
-        u.rate = 0.8;
-        window.speechSynthesis.speak(u);
-      }
-
-      function playAudio() {
-        const remaining = getRemainingWords();
-        if (remaining.length > 0) {
-          speak(remaining[state.currentIndex].hanzi);
-        }
-      }
-      // Hàm đọc từ vựng (đã có)
-      function playAudio() {
-        const remaining = getRemainingWords();
-        if (remaining.length > 0) {
-          speak(remaining[state.currentIndex].hanzi);
-        }
-      }
-
-      function playExample() {
-        const remaining = getRemainingWords();
-        if (remaining.length > 0) {
-          const rawText = remaining[state.currentIndex].example;
-
-          // Dùng Regex để chỉ giữ lại chữ Hán (Chinese Characters)
-          // Khoảng chữ Hán phổ biến: \u4e00-\u9fa5
-          const chineseOnly = rawText.match(/[\u4e00-\u9fa5，。！？；：]/g);
-
-          if (chineseOnly) {
-            const textToSpeak = chineseOnly.join("");
-            speak(textToSpeak);
-          } else {
-            // Nếu không lọc được chữ Hán thì đọc chuỗi gốc (phòng hờ)
-            speak(rawText);
-          }
-        }
-      }
-      function toggleFlip() {
-        const card = document.getElementById("flashcard");
-        card.classList.toggle("flipped");
-
-        // Nếu lật sang mặt sau (có class flipped) thì tự đọc ví dụ
-        if (card.classList.contains("flipped")) {
-          // Trì hoãn 300ms để hiệu ứng lật thẻ chạy mượt rồi mới đọc
-          setTimeout(() => {
-            playExample();
-          }, 300);
-        }
-      }
-      window.onload = updateUI;
-    </script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<script src="data.js"></script>
-
-<script src="js/firebase-config.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="data.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>
