@@ -2,84 +2,51 @@
 
 console.log("File auth.js đã được nạp!");
 
+// js/auth.js
+
 auth.onAuthStateChanged(async (user) => {
-  console.log(
-    "Kiểm tra trạng thái User từ Firebase:",
-    user ? "Đã đăng nhập: " + user.email : "Chưa đăng nhập",
-  );
+    const authContainer = document.getElementById("auth-container");
+    const mainContent = document.getElementById("main-content");
+    const navTabs = document.getElementById("nav-tabs");
+    const emailDisplay = document.getElementById("user-email-display");
 
-  const authContainer = document.getElementById("auth-container");
-  const mainContent = document.getElementById("main-content");
-  const navTabs = document.getElementById("nav-tabs");
+    if (!authContainer || !mainContent) return;
 
-  if (!authContainer || !mainContent) {
-    console.error(
-      "LỖI: Không tìm thấy ID 'auth-container' hoặc 'main-content' trong HTML. Hãy kiểm tra lại file index.html!",
-    );
-    return;
-  }
+    if (user) {
+        // 1. Hiển thị email (lấy phần trước dấu @)
+        if (emailDisplay) {
+            emailDisplay.innerText = user.email.split("@")[0];
+        }
 
-  if (user) {
-    console.log("Đang mở khóa giao diện chính...");
-    // Ẩn form login
-    authContainer.style.setProperty("display", "none", "important");
-    // Hiện nội dung chính
-    mainContent.style.setProperty("display", "block", "important");
+        // 2. Mở khóa giao diện
+        authContainer.style.setProperty("display", "none", "important");
+        mainContent.style.setProperty("display", "block", "important");
+        if (navTabs) navTabs.style.setProperty("display", "flex", "important");
 
-    if (navTabs) navTabs.style.setProperty("display", "flex", "important");
-    // 1. Lấy dữ liệu từ Firestore
-    const userDoc = await db.collection("users").doc(user.uid).get();
-    const userData = userDoc.data();
+        // 3. Lấy dữ liệu từ Firestore
+        try {
+            const userDoc = await db.collection("users").doc(user.uid).get();
+            const userData = userDoc.data();
 
-    // 2. Cập nhật vào state của app.js
-    if (userData && userData.learnedWords) {
-      state.learned = new Set(userData.learnedWords);
-      // Lưu tạm vào local để app.js dùng
-      localStorage.setItem(
-        "hsk1_learned",
-        JSON.stringify(userData.learnedWords),
-      );
+            if (userData && userData.learnedWords) {
+                state.learned = new Set(userData.learnedWords);
+                localStorage.setItem("hsk1_learned", JSON.stringify(userData.learnedWords));
+            } else {
+                state.learned = new Set();
+                localStorage.setItem("hsk1_learned", JSON.stringify([]));
+            }
+
+            if (typeof updateUI === "function") updateUI();
+        } catch (error) {
+            console.error("Lỗi lấy dữ liệu người dùng:", error);
+        }
     } else {
-      state.learned = new Set();
-      localStorage.setItem("hsk1_learned", JSON.stringify([]));
+        // Chưa đăng nhập
+        if (emailDisplay) emailDisplay.innerText = "Guest";
+        authContainer.style.setProperty("display", "block", "important");
+        mainContent.style.setProperty("display", "none", "important");
+        if (navTabs) navTabs.style.setProperty("display", "none", "important");
     }
-    // THÊM DÒNG NÀY ĐỂ HIỆN CHỮ VÀ SỐ TIẾN ĐỘ
-    if (typeof updateUI === "function") {
-      console.log("Đang gọi updateUI()...");
-      updateUI();
-    }
-    // ... các dòng code còn lại giữ nguyên
-  } else {
-    console.log("Đang hiện form Đăng nhập...");
-    // Hiện form login
-    authContainer.style.setProperty("display", "block", "important");
-    // Ẩn nội dung chính
-    mainContent.style.setProperty("display", "none", "important");
-
-    if (navTabs) navTabs.style.setProperty("display", "none", "important");
-  }
-    // LẤY THẺ HIỂN THỊ EMAIL
-  const emailDisplay = document.getElementById("user-email-display");
-
-  if (user) {
-    // --- ĐOẠN THÊM MỚI ---
-    if (emailDisplay) {
-      // Lấy phần tên trước dấu @ của email cho gọn, hoặc hiện cả email tùy Huy
-      // Ví dụ: huynguyen@gmail.com -> huynguyen
-      const shortName = user.email.split("@")[0];
-      emailDisplay.innerText = shortName;
-    }
-    // ---------------------
-
-    console.log("Đang mở khóa giao diện chính...");
-    // ... phần code xử lý hiển thị mainContent và lấy dữ liệu Firestore giữ nguyên ...
-  } else {
-    // NẾU CHƯA ĐĂNG NHẬP THÌ HIỆN 'GUEST'
-    if (emailDisplay) emailDisplay.innerText = "Guest";
-
-    console.log("Đang hiện form Đăng nhập...");
-    // ... phần code ẩn mainContent giữ nguyên ...
-  }
 });
 
 // Các hàm xử lý nút bấm (Gán vào window để HTML gọi được)
