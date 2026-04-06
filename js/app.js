@@ -2,10 +2,10 @@
 // 1. Hàm nạp dữ liệu an toàn
 function loadInitialData() {
   // Kiểm tra xem hsk1_vocab_full từ file data.js đã sẵn sàng chưa
-  const data = (typeof hsk1_vocab_full !== 'undefined') ? hsk1_vocab_full : [];
+  const data = typeof hsk1_vocab_full !== "undefined" ? hsk1_vocab_full : [];
   return data.map((word) => ({
     ...word,
-    id: word.id ? `hsk1_${word.id}` : `hsk1_auto`
+    id: word.id ? `hsk1_${word.id}` : `hsk1_auto`,
   }));
 }
 
@@ -87,14 +87,14 @@ function updateUI() {
 }
 
 // 3. CÁC HÀM ĐIỀU KHIỂN (Gán vào window)
-window.nextCard = function () {
+window.nextWord = function () {
   const remaining = getRemainingWords();
   if (remaining.length === 0) return;
   state.currentIndex = (state.currentIndex + 1) % remaining.length;
   updateUI();
 };
 
-window.prevCard = function () {
+window.prevWord = function () {
   const remaining = getRemainingWords();
   if (remaining.length === 0) return;
   state.currentIndex =
@@ -102,15 +102,34 @@ window.prevCard = function () {
   updateUI();
 };
 
+// window.toggleFlip = function () {
+//   const card = document.getElementById("flashcard");
+//   if (!card) return;
+//   card.classList.toggle("flipped");
+//   if (card.classList.contains("flipped")) {
+//     setTimeout(() => playExample(), 200);
+//   }
+// };
 window.toggleFlip = function () {
   const card = document.getElementById("flashcard");
   if (!card) return;
+
+  // Sử dụng đúng class "flipped" như trong file HTML/CSS
   card.classList.toggle("flipped");
+
+  // Kiểm tra nếu thẻ đang ở mặt sau thì tự động đọc ví dụ
   if (card.classList.contains("flipped")) {
-    setTimeout(() => playExample(), 300);
+    setTimeout(() => {
+      if (typeof playExample === "function") {
+        playExample();
+      }
+    }, 300); // Đợi 0.3 giây để hiệu ứng lật thẻ bắt đầu rồi mới đọc
+  } else {
+    // ĐÃ LẬT VỀ MẶT TRƯỚC: Ngắt giọng nói ngay lập tức
+    window.speechSynthesis.cancel();
+    console.log("Đã dừng đọc vì thẻ đã lật về mặt trước.");
   }
 };
-
 window.markAsLearned = async function () {
   const remaining = getRemainingWords();
   if (remaining.length === 0) return;
@@ -151,60 +170,66 @@ window.resetProgress = function () {
 };
 // --- BỔ SUNG CÁC HÀM CÒN THIẾU ---
 
-window.playAudio = function() {
-    const remaining = getRemainingWords();
-    if (remaining.length > 0) {
-        speak(remaining[state.currentIndex].hanzi);
-    }
+window.playAudio = function () {
+  const remaining = getRemainingWords();
+  if (remaining.length > 0) {
+    speak(remaining[state.currentIndex].hanzi);
+  }
 };
 
-window.playExample = function() {
-    const remaining = getRemainingWords();
-    if (remaining.length > 0) {
-        const rawText = remaining[state.currentIndex].example || "";
-        const chineseOnly = rawText.match(/[\u4e00-\u9fa5，。！？；：]/g);
-        if (chineseOnly) {
-            speak(chineseOnly.join(""));
-        } else if (rawText) {
-            speak(rawText);
-        }
+window.playExample = function () {
+  const remaining = getRemainingWords();
+  if (remaining.length > 0) {
+    const rawText = remaining[state.currentIndex].example || "";
+    const chineseOnly = rawText.match(/[\u4e00-\u9fa5，。！？；：]/g);
+    if (chineseOnly) {
+      speak(chineseOnly.join(""));
+    } else if (rawText) {
+      speak(rawText);
     }
+  }
 };
 
 function speak(text) {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "zh-CN";
-    u.rate = 0.8;
-    window.speechSynthesis.speak(u);
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "zh-CN";
+  u.rate = 0.8;
+  window.speechSynthesis.speak(u);
 }
 
-window.switchView = function(view) {
-    state.view = view;
-    const studyView = document.getElementById("view-study");
-    const listView = document.getElementById("view-list");
-    const btnStudy = document.getElementById("btn-study");
-    const btnList = document.getElementById("btn-list");
+window.switchView = function (view) {
+  state.view = view;
+  const studyView = document.getElementById("view-study");
+  const listView = document.getElementById("view-list");
+  const btnStudy = document.getElementById("btn-study");
+  const btnList = document.getElementById("btn-list");
 
-    if (view === "study") {
-        studyView.classList.remove("hidden");
-        listView.classList.add("hidden");
-        btnStudy.className = "px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600";
-        btnList.className = "px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600";
-        updateUI();
-    } else {
-        studyView.classList.add("hidden");
-        listView.classList.remove("hidden");
-        btnList.className = "px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600";
-        btnStudy.className = "px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600";
-        renderList(hsk1_vocab);
-    }
+  if (view === "study") {
+    studyView.classList.remove("hidden");
+    listView.classList.add("hidden");
+    btnStudy.className =
+      "px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600";
+    btnList.className =
+      "px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600";
+    updateUI();
+  } else {
+    studyView.classList.add("hidden");
+    listView.classList.remove("hidden");
+    btnList.className =
+      "px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-white shadow-sm text-blue-600";
+    btnStudy.className =
+      "px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-slate-600";
+    renderList(hsk1_vocab);
+  }
 };
 
 function renderList(data) {
-    const container = document.getElementById("list-body");
-    if (!container) return;
-    container.innerHTML = data.map(w => `
+  const container = document.getElementById("list-body");
+  if (!container) return;
+  container.innerHTML = data
+    .map(
+      (w) => `
         <tr class="hover:bg-slate-50 ${state.learned.has(w.id) ? "opacity-40" : ""}">
             <td class="px-6 py-4 font-bold chinese-font text-xl text-slate-700">
                 ${w.hanzi} ${state.learned.has(w.id) ? '<i class="fas fa-check-circle text-green-500 text-sm"></i>' : ""}
@@ -217,17 +242,20 @@ function renderList(data) {
                 </button>
             </td>
         </tr>
-    `).join("");
+    `,
+    )
+    .join("");
 }
 
-window.handleSearch = function() {
-    const q = document.getElementById("search").value.toLowerCase();
-    const filtered = hsk1_vocab.filter(w => 
-        w.hanzi.includes(q) || 
-        w.pinyin.toLowerCase().includes(q) || 
-        w.meaning_vi.toLowerCase().includes(q)
-    );
-    renderList(filtered);
+window.handleSearch = function () {
+  const q = document.getElementById("search").value.toLowerCase();
+  const filtered = hsk1_vocab.filter(
+    (w) =>
+      w.hanzi.includes(q) ||
+      w.pinyin.toLowerCase().includes(q) ||
+      w.meaning_vi.toLowerCase().includes(q),
+  );
+  renderList(filtered);
 };
 window.changeCourse = function () {
   const course = document.getElementById("course-selector").value;
@@ -239,3 +267,25 @@ window.changeCourse = function () {
 };
 // Cuối cùng, gán speak vào window để dùng trong renderList
 window.speak = speak;
+
+lucide.createIcons();
+// Cập nhật trạng thái Active của Nav khi switchView
+const originalSwitchView = window.switchView;
+window.switchView = function (view) {
+  if (originalSwitchView) originalSwitchView(view);
+
+  const btnStudy = document.getElementById("btn-study");
+  const btnList = document.getElementById("btn-list");
+
+  if (view === "study") {
+    btnStudy.classList.add("nav-active");
+    btnStudy.classList.remove("text-slate-300");
+    btnList.classList.remove("nav-active");
+    btnList.classList.add("text-slate-300");
+  } else {
+    btnList.classList.add("nav-active");
+    btnList.classList.remove("text-slate-300");
+    btnStudy.classList.remove("nav-active");
+    btnStudy.classList.add("text-slate-300");
+  }
+};
