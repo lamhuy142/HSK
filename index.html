@@ -68,10 +68,10 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col max-w-4xl mx-auto text-slate-800 pb-24">
+<body class="min-h-screen flex flex-col max-w-4xl mx-auto text-slate-800 pb-40">
 
     <!-- Header (Chỉ giữ Logo và Profile) -->
-    <nav class="px-6 py-6 flex items-center justify-between">
+    <nav class="px-6 py-6 flex items-center justify-between sticky top-0 z-40">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-[#E8F5E9] rounded-xl flex items-center justify-center text-[#4CAF50] shadow-sm">
                 <i data-lucide="book-open" class="w-6 h-6"></i>
@@ -164,7 +164,7 @@
                 </div>
 
                 <!-- Nút Đã thuộc -->
-                <div class="flex flex-col items-center pt-2">
+                <div class="flex flex-col items-center pt-2 mb-8">
                     <button onclick="markAsLearned()" class="soft-button flex flex-col items-center gap-2 group">
                         <div class="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center text-[#4CAF50] group-hover:bg-[#E8F5E9] transition-all">
                             <i data-lucide="check" class="w-8 h-8"></i>
@@ -196,22 +196,22 @@
     </main>
 
     <!-- Footer Navigation (Sticky Bottom) -->
-    <nav id="nav-tabs" class="fixed bottom-6 left-1/2 -translateX-1/2 w-[90%] max-w-md bg-white/80 backdrop-blur-md border border-white rounded-[2rem] shadow-2xl px-8 py-4 flex justify-between items-center z-50">
-        <button onclick="switchView('study')" id="btn-study" class="flex flex-col items-center gap-1 soft-button nav-active">
-            <i data-lucide="layout-grid" class="w-6 h-6"></i>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Học tập</span>
-        </button>
-        
-        <button onclick="switchView('list')" id="btn-list" class="flex flex-col items-center gap-1 soft-button text-slate-300">
-            <i data-lucide="list-video" class="w-6 h-6"></i>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Danh sách</span>
-        </button>
+    <nav id="nav-tabs" class="fixed bottom-6 left-0 right-0 mx-auto w-[90%] max-w-md bg-white/90 backdrop-blur-md border border-white/50 rounded-[2.5rem] shadow-2xl px-8 py-4 flex justify-between items-center z-50">
+    <button onclick="switchView('study')" id="btn-study" class="flex flex-col items-center gap-1 soft-button nav-active">
+        <i data-lucide="layout-grid" class="w-6 h-6"></i>
+        <span class="text-[10px] font-bold uppercase tracking-tighter">Học tập</span>
+    </button>
+    
+    <button onclick="switchView('list')" id="btn-list" class="flex flex-col items-center gap-1 soft-button text-slate-300">
+        <i data-lucide="list-video" class="w-6 h-6"></i>
+        <span class="text-[10px] font-bold uppercase tracking-tighter">Danh sách</span>
+    </button>
 
-        <button class="flex flex-col items-center gap-1 soft-button text-slate-300">
-            <i data-lucide="settings" class="w-6 h-6"></i>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Cài đặt</span>
-        </button>
-    </nav>
+    <button class="flex flex-col items-center gap-1 soft-button text-slate-300">
+        <i data-lucide="settings" class="w-6 h-6"></i>
+        <span class="text-[10px] font-bold uppercase tracking-tighter">Cài đặt</span>
+    </button>
+</nav>
 
     <!-- Firebase & App Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
