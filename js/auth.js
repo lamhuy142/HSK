@@ -58,6 +58,28 @@ auth.onAuthStateChanged(async (user) => {
 
     if (navTabs) navTabs.style.setProperty("display", "none", "important");
   }
+    // LẤY THẺ HIỂN THỊ EMAIL
+  const emailDisplay = document.getElementById("user-email-display");
+
+  if (user) {
+    // --- ĐOẠN THÊM MỚI ---
+    if (emailDisplay) {
+      // Lấy phần tên trước dấu @ của email cho gọn, hoặc hiện cả email tùy Huy
+      // Ví dụ: huynguyen@gmail.com -> huynguyen
+      const shortName = user.email.split("@")[0];
+      emailDisplay.innerText = shortName;
+    }
+    // ---------------------
+
+    console.log("Đang mở khóa giao diện chính...");
+    // ... phần code xử lý hiển thị mainContent và lấy dữ liệu Firestore giữ nguyên ...
+  } else {
+    // NẾU CHƯA ĐĂNG NHẬP THÌ HIỆN 'GUEST'
+    if (emailDisplay) emailDisplay.innerText = "Guest";
+
+    console.log("Đang hiện form Đăng nhập...");
+    // ... phần code ẩn mainContent giữ nguyên ...
+  }
 });
 
 // Các hàm xử lý nút bấm (Gán vào window để HTML gọi được)

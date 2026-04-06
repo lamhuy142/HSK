@@ -71,28 +71,33 @@
 <body class="min-h-screen flex flex-col max-w-4xl mx-auto text-slate-800 pb-40">
 
     <!-- Header (Chỉ giữ Logo và Profile) -->
-    <nav class="px-6 py-6 flex items-center justify-between sticky top-0 z-40">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-[#E8F5E9] rounded-xl flex items-center justify-center text-[#4CAF50] shadow-sm">
-                <i data-lucide="book-open" class="w-6 h-6"></i>
-            </div>
-            <div>
-                <h1 class="font-bold text-lg leading-none text-slate-700">HSK Vocab</h1>
-                <select id="course-selector" onchange="changeCourse()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-transparent border-none outline-none cursor-pointer">
-                    <option value="hsk1">HSK 1</option>
-                </select>
-            </div>
+    <nav class="sticky top-0 z-50 px-6 py-4 flex items-center justify-between bg-white/10 backdrop-blur-2xl border-b border-white/10">
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-[#203F9A]/20 rounded-xl flex items-center justify-center text-[#203F9A] shadow-sm">
+            <i data-lucide="book-open" class="w-6 h-6"></i>
         </div>
-        
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full border-2 border-white shadow-sm bg-[#FFEBEE] flex items-center justify-center text-[#FF80AB]">
-                <i data-lucide="user" class="w-5 h-5"></i>
-            </div>
-            <button onclick="handleLogout()" class="text-slate-300 hover:text-red-400 transition-colors soft-button">
-                <i data-lucide="log-out" class="w-5 h-5"></i>
-            </button>
+        <div>
+            <h1 class="font-bold text-lg leading-none text-slate-700">HSK Vocab</h1>
+            <select id="course-selector" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-transparent border-none outline-none cursor-pointer">
+                <option value="hsk1">HSK 1</option>
+            </select>
         </div>
-    </nav>
+    </div>
+    
+    <div class="flex items-center gap-3">
+        <div class="flex flex-col items-center gap-1">
+    <div class="w-9 h-9 rounded-full border-2 border-white shadow-sm bg-[#E7A0CC]/20 flex items-center justify-center text-[#E84797]">
+        <i data-lucide="user" class="w-5 h-5"></i>
+    </div>
+    <span id="user-email-display" class="text-[9px] font-bold text-slate-400 lowercase tracking-tight leading-none">
+        Guest
+    </span>
+</div>
+        <button class="text-slate-400 hover:text-red-400 transition-colors">
+            <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+    </div>
+</nav>
 
     <main class="flex-1 px-6 max-w-md mx-auto w-full">
         
