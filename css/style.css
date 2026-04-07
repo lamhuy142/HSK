@@ -9,42 +9,53 @@
 }
 body {
   font-family: "Quicksand", sans-serif;
-  background-color: #FFD716; /* Vàng bơ nhạt */
-  color: #001F3E; /* 10% - Chữ màu xanh đen đậm */
+  background-color: #ffd716; /* Vàng bơ nhạt */
+  color: #001f3e; /* 10% - Chữ màu xanh đen đậm */
   margin: 0;
   padding: 0;
 }
 /* Đổi màu Header và các Icon chính */
-    #main-header {
-        background-color: rgba(255, 215, 22, 0.1); /* Dùng màu #FFD716 dạng mờ */
-        border-bottom-color: rgba(7, 51, 88, 0.1);
-    }
+#main-header {
+  background-color: rgba(255, 215, 22, 0.1); /* Dùng màu #FFD716 dạng mờ */
+  border-bottom-color: rgba(7, 51, 88, 0.1);
+}
 
-    .text-logo { color: #073358 !important; } /* Màu xanh đen cho Logo */
-    .bg-logo { background-color: rgba(7, 51, 88, 0.1) !important; }
+.text-logo {
+  color: #073358 !important;
+} /* Màu xanh đen cho Logo */
+.bg-logo {
+  background-color: rgba(7, 51, 88, 0.1) !important;
+}
 
-    /* 30% - Màu xanh lá cho các nút bấm và trạng thái */
-    .bg-trangthai { background-color: #0DA574 !important; color: white !important; }
-    .text-trangthai { color: #0DA574 !important; }
-    #progress-bar { background-color: #0DA574 !important; }
-    
-    /* Màu cho Card */
-    .card-face {
-        border-color: #FFD716 !important; /* Viền vàng */
-    }
-    .card-back {
-        background-color: #F0FAF7 !important; /* Xanh lá cực nhẹ cho mặt sau */
-        color: #073358 !important;
-    }
+/* 30% - Màu xanh lá cho các nút bấm và trạng thái */
+.bg-trangthai {
+  background-color: #0da574 !important;
+  color: white !important;
+}
+.text-trangthai {
+  color: #0da574 !important;
+}
+#progress-bar {
+  background-color: #0da574 !important;
+}
 
-    /* Thanh điều hướng dưới (Footer Nav) */
-    #nav-tabs {
-        background-color: rgba(255, 255, 255, 0.9);
-        border: 1px solid #FFD716;
-    }
-    .nav-active {
-        color: #0DA574 !important; /* Active chuyển sang xanh lá */
-    }
+/* Màu cho Card */
+.card-face {
+  border-color: #ffd716 !important; /* Viền vàng */
+}
+.card-back {
+  background-color: #f0faf7 !important; /* Xanh lá cực nhẹ cho mặt sau */
+  color: #073358 !important;
+}
+
+/* Thanh điều hướng dưới (Footer Nav) */
+#nav-tabs {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ffd716;
+}
+.nav-active {
+  color: #0da574 !important; /* Active chuyển sang xanh lá */
+}
 /* Đảm bảo Nav co giãn theo nội dung */
 nav {
   height: auto;
@@ -188,4 +199,24 @@ nav {
 }
 .soft-button:active {
   transform: scale(0.9);
+}
+.chinese-word-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Thay đổi: Thêm padding và giới hạn chiều rộng */
+    width: 100%;
+    max-width: 90%;      /* Không cho phép rộng quá 90% chiều rộng thẻ */
+    margin: 0 auto;      /* Luôn nằm giữa */
+    padding: 0 15px;     /* Tạo khoảng trống an toàn ở 2 bên mép */
+    
+    white-space: nowrap; 
+    overflow: hidden;    
+    min-height: 5rem;    
+}
+
+#card-hanzi {
+    /* Đảm bảo chữ Hán không bao giờ to quá vùng chứa */
+    max-width: 100%;
+    display: block;
 }

@@ -10,6 +10,7 @@ auth.onAuthStateChanged(async (user) => {
   const mainHeader = document.getElementById("main-header");
   const navTabs = document.getElementById("nav-tabs");
   const emailDisplay = document.getElementById("user-email-display");
+  const loadingScreen = document.getElementById("loading-screen");
 
   if (user) {
     if (emailDisplay) emailDisplay.innerText = user.email.split("@")[0];
@@ -17,6 +18,8 @@ auth.onAuthStateChanged(async (user) => {
     // ĐỌC TRẠNG THÁI ĐÃ LƯU
     const savedHSK = localStorage.getItem("currentHSK");
     const savedView = localStorage.getItem("currentView");
+    // Sau khi tất cả logic hiển thị giao diện học tập xong:
+    if (loadingScreen) loadingScreen.style.display = "none";
 
     if (savedHSK && savedView === "study") {
       // NẾU ĐANG HỌC DỞ: Vào thẳng Flashcard
@@ -39,6 +42,8 @@ auth.onAuthStateChanged(async (user) => {
         mainHeader.style.setProperty("display", "none", "important");
       if (mainContent)
         mainContent.style.setProperty("display", "none", "important");
+      // Tắt màn hình chờ để hiện form login
+      if (loadingScreen) loadingScreen.style.display = "none";
     }
 
     // 3. Lấy dữ liệu từ Firestore một lần duy nhất

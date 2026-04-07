@@ -3527,3 +3527,77 @@ window.hsk1_vocab_full = [
     example: "他总是笑 (tā zǒngshì xiào) - Anh ấy luôn cười.",
   },
 ];
+window.hsk2_vocab_full = [
+  {
+    id: "hsk2_1",
+    hanzi: "吧",
+    pinyin: "ba",
+    meaning_vi: "nhé, đi (trợ từ ngữ khí)",
+    example: "我们走吧 (wǒ men zǒu ba) - Chúng ta đi thôi.",
+  },
+  {
+    id: "hsk2_2",
+    hanzi: "白",
+    pinyin: "bái",
+    meaning_vi: "trắng",
+    example: "我不喜欢白色 (wǒ bù xǐ huan bái sè) - Tôi không thích màu trắng.",
+  },
+  {
+    id: "hsk2_3",
+    hanzi: "百",
+    pinyin: "bǎi",
+    meaning_vi: "trăm",
+    example: "一百块钱 (yī bǎi kuài qián) - Một trăm tệ.",
+  },
+  {
+    id: "hsk2_4",
+    hanzi: "帮助",
+    pinyin: "bāng zhù",
+    meaning_vi: "giúp đỡ",
+    example:
+      "谢谢你的帮助 (xiè xie nǐ de bāng zhù) - Cảm ơn sự giúp đỡ của bạn.",
+  },
+  {
+    id: "hsk2_5",
+    hanzi: "报纸",
+    pinyin: "bào zhǐ",
+    meaning_vi: "báo chí",
+    example: "他在看报纸 (tā zài kàn bào zhǐ) - Anh ấy đang đọc báo.",
+  },
+  {
+    id: "hsk2_6",
+    hanzi: "比",
+    pinyin: "bǐ",
+    meaning_vi: "so với",
+    example: "我比ta大 (wǒ bǐ tā dà) - Tôi lớn hơn anh ấy.",
+  },
+  {
+    id: "hsk2_7",
+    hanzi: "别",
+    pinyin: "bié",
+    meaning_vi: "đừng, khác",
+    example: "别走了 (bié zǒu le) - Đừng đi nữa.",
+  },
+  {
+    id: "hsk2_8",
+    hanzi: "唱歌",
+    pinyin: "chàng gē",
+    meaning_vi: "hát",
+    example: "她唱歌很好听 (tā chàng gē hěn hǎo tīng) - Cô ấy hát rất hay.",
+  },
+  {
+    id: "hsk2_9",
+    hanzi: "出",
+    pinyin: "chū",
+    meaning_vi: "ra, xuất",
+    example:
+      "他在外面出了点事 (tā zài wài mian chū le diǎn shì) - Anh ấy ở bên ngoài có chút chuyện.",
+  },
+  {
+    id: "hsk2_10",
+    hanzi: "穿",
+    pinyin: "chuān",
+    meaning_vi: "mặc",
+    example: "你想穿什么？(nǐ xiǎng chuān shén me?) - Bạn muốn mặc gì?",
+  },
+];

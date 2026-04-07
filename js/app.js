@@ -1,4 +1,13 @@
 // js/app.js
+// Thêm đoạn này vào trong hàm toggleEditExample hoặc phần khởi tạo
+document
+  .getElementById("user-ex-input")
+  .addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.stopPropagation();
+      saveCustomExample();
+    }
+  });
 // 1. Hàm nạp dữ liệu an toàn
 function loadInitialData() {
   // Kiểm tra xem hsk1_vocab_full từ file data.js đã sẵn sàng chưa
@@ -18,7 +27,7 @@ const savedLearned = JSON.parse(localStorage.getItem("hsk1_learned")) || [];
 let currentVocab = hsk1_vocab;
 const state = {
   currentIndex: 0,
-  learned: new Set(savedLearned),
+  learned: new Set(),
   view: "study",
 };
 
@@ -35,6 +44,24 @@ function updateUI() {
 
   // Kiểm tra các phần tử HTML quan trọng trước khi chạy
   const studyView = document.getElementById("view-study");
+  const word = remaining[state.currentIndex];
+  const hanziElement = document.getElementById("card-hanzi");
+
+  if (hanziElement) {
+    hanziElement.innerText = word.hanzi;
+
+    // Điều chỉnh font chữ linh hoạt hơn
+    if (word.hanzi.length >= 4) {
+      // Rất dài (4 chữ trở lên): Cho nhỏ hẳn để an toàn
+      hanziElement.className = "text-3xl font-bold text-slate-800 chinese-font";
+    } else if (word.hanzi.length === 3) {
+      // Dài vừa (3 chữ): Kích thước trung bình
+      hanziElement.className = "text-4xl font-bold text-slate-800 chinese-font";
+    } else {
+      // Ngắn (1-2 chữ): Để to cho đẹp
+      hanziElement.className = "text-6xl font-bold text-slate-800 chinese-font";
+    }
+  }
   if (!studyView) return;
 
   // Trường hợp đã thuộc hết
@@ -55,14 +82,37 @@ function updateUI() {
 
   // Đảm bảo Index an toàn
   if (state.currentIndex >= remaining.length) state.currentIndex = 0;
-  const word = remaining[state.currentIndex];
+  // const word = remaining[state.currentIndex];
+
+  // --- PHẦN XỬ LÝ TÁCH VÍ DỤ ---
+  const rawExample = word.example || "";
+  // Regex tách định dạng: "Chữ Hán (pinyin) - Nghĩa"
+  const match = rawExample.match(/^(.*?)\s*\((.*?)\)\s*-\s*(.*)$/);
+
+  let exHanzi = rawExample;
+  let exPinyin = "";
+  let exMeaning = "";
+
+  if (match) {
+    exHanzi = match[1].trim();
+    exPinyin = match[2].trim();
+    exMeaning = match[3].trim();
+  } else {
+    // Nếu không tách được, hiện nguyên văn vào dòng Hán tự, các dòng kia để trống
+    exHanzi = rawExample || "Chưa có ví dụ";
+    exPinyin = "";
+    exMeaning = "";
+  }
 
   // Đổ dữ liệu ra màn hình
   const elements = {
     "card-hanzi": word.hanzi,
     "card-pinyin": word.pinyin,
-    "card-meaning_vi": word.meaning_vi,
-    "card-example": word.example || "Chưa có ví dụ",
+    "card-meaning_vi-front": word.meaning_vi,
+    // Đổ 3 phần ví dụ đã tách vào các ID tương ứng
+    "card-ex-hanzi": exHanzi,
+    "card-ex-pinyin": exPinyin,
+    "card-ex-meaning": exMeaning,
     "card-id": word.id.replace("hsk1_", ""),
   };
 
@@ -74,7 +124,7 @@ function updateUI() {
   // Cập nhật Progress Bar
   const total = currentVocab.length;
   const learnedCount = state.learned.size;
-  const progressPercent = (learnedCount / total) * 100;
+  const progressPercent = total > 0 ? (learnedCount / total) * 100 : 0;
   const progressBar = document.getElementById("progress-bar");
   const progressText = document.getElementById("progress-text");
 
@@ -101,15 +151,6 @@ window.prevWord = function () {
     (state.currentIndex - 1 + remaining.length) % remaining.length;
   updateUI();
 };
-
-// window.toggleFlip = function () {
-//   const card = document.getElementById("flashcard");
-//   if (!card) return;
-//   card.classList.toggle("flipped");
-//   if (card.classList.contains("flipped")) {
-//     setTimeout(() => playExample(), 200);
-//   }
-// };
 window.toggleFlip = function () {
   const card = document.getElementById("flashcard");
   if (!card) return;
@@ -292,30 +333,45 @@ window.switchView = function (view) {
 window.selectCourse = function (level) {
   console.log("Đang chọn HSK mức độ:", level);
 
-  // LƯU TRẠNG THÁI VÀO LOCALSTORAGE
+  // 1. LƯU TRẠNG THÁI
   localStorage.setItem("currentHSK", level);
   localStorage.setItem("currentView", "study");
-  // 1. Lấy các phần tử giao diện
+
+  // 2. GÁN DỮ LIỆU (Đảm bảo hsk1_vocab, hsk2_vocab đã có trong data.js)
+  if (level === 1) {
+    currentVocab = hsk1_vocab;
+  } else if (level === 2) {
+    // Kiểm tra xem hsk2_vocab đã được định nghĩa chưa
+    if (typeof hsk2_vocab !== "undefined") {
+      currentVocab = hsk2_vocab;
+    } else {
+      alert("Dữ liệu HSK 2 chưa sẵn sàng!");
+      return;
+    }
+  } else {
+    alert("Cấp độ này đang được cập nhật!");
+    return;
+  }
+
+  // 3. CẬP NHẬT GIAO DIỆN (Giữ nguyên phần ẩn hiện của Huy)
   const courseSelection = document.getElementById("course-selection");
   const mainContent = document.getElementById("main-content");
   const mainHeader = document.getElementById("main-header");
   const navTabs = document.getElementById("nav-tabs");
   const labelLevel = document.getElementById("label-level");
-  const hskLabel = document.getElementById("current-hsk-label");
 
-  // 2. Cập nhật tên mức độ HSK lên giao diện
   if (labelLevel) labelLevel.innerText = `HSK ${level}`;
-  if (hskLabel) hskLabel.innerText = `HSK ${level}`;
+  if (courseSelection) courseSelection.style.display = "none";
+  if (mainHeader) mainHeader.style.display = "flex";
+  if (mainContent) mainContent.style.display = "block";
+  if (navTabs) navTabs.style.display = "flex";
 
-  // 3. Ẩn hiện màn hình
+  // 4. RESET TRẠNG THÁI HỌC
+  state.currentIndex = 0;
 
-  if (courseSelection)
-    courseSelection.style.setProperty("display", "none", "important");
-  if (mainHeader) mainHeader.style.setProperty("display", "flex", "important");
-  if (mainContent)
-    mainContent.style.setProperty("display", "block", "important");
-  if (navTabs) navTabs.style.setProperty("display", "flex", "important");
-
+  // Quan trọng: Nếu Huy muốn HSK 2 bắt đầu từ 0/1272, hãy xóa state.learned cũ
+  // hoặc tạo hệ thống lưu learnedWords theo từng Level.
+  // Tạm thời để hiện đúng danh sách từ mới:
   updateUI();
   window.scrollTo(0, 0);
 };
@@ -337,4 +393,146 @@ window.showCourseSelection = function () {
   document
     .getElementById("nav-tabs")
     .style.setProperty("display", "none", "important");
+};
+// 1. Đóng/Mở form nhập
+window.toggleEditExample = function () {
+  const display = document.getElementById("example-display-area");
+  const edit = document.getElementById("example-edit-area");
+  display.classList.toggle("hidden");
+  edit.classList.toggle("hidden");
+};
+
+// 2. Hàm dịch và lưu
+window.saveCustomExample = async function () {
+  const input = document.getElementById("user-ex-input");
+  const viText = input.value.trim();
+  if (!viText) return alert("Vui lòng nhập câu tiếng Việt!");
+
+  const remaining = getRemainingWords();
+  const word = remaining[state.currentIndex];
+
+  try {
+    const saveBtn = event.target;
+    saveBtn.innerText = "Đang dịch...";
+    saveBtn.disabled = true;
+
+    const translated = await fetchTranslation(viText);
+    const newExample = `${translated.hanzi} (${translated.pinyin}) - ${viText}`;
+
+    // Cập nhật local để hiển thị ngay
+    word.example = newExample;
+
+    // LƯU LÊN FIRESTORE
+    const user = auth.currentUser;
+    if (user) {
+      // Lưu vào collection 'custom_examples' bên trong mỗi user
+      await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("custom_examples")
+        .doc(word.id)
+        .set({
+          example: newExample,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+    }
+
+    updateUI();
+    toggleEditExample();
+    saveBtn.innerText = "Lưu & Dịch";
+    saveBtn.disabled = false;
+    input.value = "";
+  } catch (error) {
+    alert("Lỗi lưu dữ liệu!");
+    console.error(error);
+  }
+};
+
+// 1. Hàm dịch câu sử dụng MyMemory (Ổn định hơn Google Translate cho localhost)
+async function fetchTranslation(text) {
+    try {
+        const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=vi|zh`);
+        const data = await response.json();
+        
+        if (data.responseStatus !== 200) throw new Error("API Limit");
+
+        const hanzi = data.responseData.translatedText;
+        
+        // Sử dụng thư viện pinyin-pro để tạo pinyin từ chữ Hán vừa dịch được
+        let exPinyin = "";
+        if (typeof pinyinPro !== "undefined") {
+            exPinyin = pinyinPro.pinyin(hanzi);
+        } else {
+            exPinyin = "Cần nạp thư viện pinyin-pro";
+        }
+
+        return { hanzi, pinyin: exPinyin };
+    } catch (error) {
+        console.error("Lỗi dịch:", error);
+        throw error;
+    }
+}
+
+// 2. Hàm lưu ví dụ tùy chỉnh
+// 2. Hàm dịch và lưu - Đã sửa lỗi wwindow và event
+window.saveCustomExample = async function (e) {
+  // Ngăn chặn lật thẻ nếu có lan truyền sự kiện
+  if (e) e.stopPropagation();
+
+  const input = document.getElementById("user-ex-input");
+  const viText = input.value ? input.value.trim() : "";
+  
+  if (!viText) return alert("Vui lòng nhập câu tiếng Việt!");
+
+  // Lấy từ hiện tại
+  const remaining = getRemainingWords();
+  if (!remaining || remaining.length === 0) return;
+  const word = remaining[state.currentIndex];
+
+  // Xác định nút bấm để đổi text (Dùng e.target hoặc selector nếu e không tồn tại)
+  const saveBtn = e ? e.target : document.querySelector('button[onclick*="saveCustomExample"]');
+
+  try {
+    if (saveBtn) {
+      saveBtn.innerText = "Đang dịch...";
+      saveBtn.disabled = true;
+    }
+
+    const translated = await fetchTranslation(viText);
+    const newExample = `${translated.hanzi} (${translated.pinyin}) - ${viText}`;
+
+    // Cập nhật local để hiển thị ngay
+    word.example = newExample;
+
+    // LƯU LÊN FIRESTORE
+    const user = auth.currentUser;
+    if (user) {
+      await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("custom_examples")
+        .doc(word.id)
+        .set({
+          example: newExample,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+      console.log("Đã lưu Firestore thành công!");
+    }
+
+    updateUI();
+    toggleEditExample();
+
+    if (saveBtn) {
+      saveBtn.innerText = "Lưu & Dịch";
+      saveBtn.disabled = false;
+    }
+    input.value = "";
+  } catch (error) {
+    alert("Lỗi lưu dữ liệu hoặc dịch thuật!");
+    console.error(error);
+    if (saveBtn) {
+      saveBtn.innerText = "Lưu & Dịch";
+      saveBtn.disabled = false;
+    }
+  }
 };

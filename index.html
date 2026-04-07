@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Noto+Sans+SC:wght@700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="./css/style.css">
+    <script src="https://unpkg.com/pinyin-pro"></script>
 <style>
 
 
@@ -41,7 +42,12 @@
 
 
 <body class="min-h-screen flex flex-col max-w-4xl mx-auto text-slate-800 pb-40">
-
+<div id="loading-screen" class="fixed inset-0 bg-[#FFFDF0] z-[999] flex items-center justify-center">
+    <div class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-[#0DA574] border-t-transparent rounded-full animate-spin"></div>
+        <p class="font-bold text-[#073358] animate-pulse">Đang tải dữ liệu...</p>
+    </div>
+</div>
     <!-- Header (Chỉ giữ Logo và Profile) -->
     <nav id="main-header" class="hidden sticky top-0 z-50 px-6 py-4 flex items-center justify-between bg-white/10 backdrop-blur-2xl border-b border-white/10">
     <div class="flex items-center gap-3">
@@ -50,8 +56,8 @@
         </div>
         <div>
             <h1 class="font-bold text-lg leading-none text-slate-700">HSK Vocab</h1>
-            <button onclick="showCourseSelection()" class="text-[10px] text-logo font-bold text-slate-400 uppercase tracking-widest bg-transparent border-none outline-none cursor-pointer">
-                <span value="current-hsk-label">HSK 1</span>
+            <button class="text-[10px] text-logo font-bold text-slate-400 uppercase tracking-widest bg-transparent border-none outline-none cursor-pointer">
+                <span value="current-hsk-label">你好</span>
             </button>
         </div>
     </div>
@@ -75,7 +81,7 @@
         
         <!-- Auth Container -->
         <!-- 1. Màn hình Đăng nhập (Center) -->
-        <div id="auth-container" class="flex flex-col justify-center px-6 h-full min-h-screen py-10">
+        <div id="auth-container" class="hidden flex flex-col justify-center px-6 h-full min-h-screen py-10">
             
             <div class="bg-white p-8 rounded-[3rem] shadow-2xl border border-white w-full text-center">
                 <div class="w-20 h-20 bg-[#FFD716] rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-lg rotate-3">
@@ -137,21 +143,40 @@
                     <div class="card-container flex-1 aspect-[3/4]">
                         <div id="flashcard" class="card-inner" onclick="toggleFlip()">
                             <div class="card-face bg-white border-4 border-[#FFF9C4]/50">
-                                <h2 id="card-hanzi" class="chinese-font text-8xl text-slate-800 mb-6 tracking-tighter"></h2>
+                                <div class="chinese-word-display mb-4">
+                                    <h2 id="card-hanzi" class="chinese-font text-8xl text-slate-800 mb-6 tracking-tighter"></h2>
+                                </div>
                                 <p id="card-pinyin" class="text-xl text-trangthai font-medium tracking-wide mb-4"></p>
+                                <p id="card-meaning_vi-front" class="text-lg text-slate-500 font-light"></p>
                                 <button onclick="event.stopPropagation(); playAudio()" class="text-slate-200 hover:text-[#FBC02D] transition-colors soft-button">
                                     <i data-lucide="volume-2" class="w-6 h-6"></i>
                                 </button>
                             </div>
                             <div class="card-face card-back bg-[#E8F5E9] border-4 border-white text-[#2E7D32] p-8">
                                 <div class="text-center">
+                                    <button onclick="toggleEditExample(); event.stopPropagation();" 
+                                            class="absolute top-4 right-4 text-slate-400 hover:text-blue-500 transition-colors p-1 z-10">
+                                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                                    </button>
                                     <p class="text-[10px] font-bold text-[#81C784] uppercase tracking-widest mb-4">Ý nghĩa</p>
-                                    <p id="card-meaning_vi" class="text-3xl font-bold mb-6 leading-tight"></p>
+                                    <div id="example-display-area"  class="mt-4 p-3  rounded-xl border border-slate-100">
+                                        <p id="card-ex-hanzi" class="text-lg font-bold text-slate-800 chinese-font mb-1"></p>
+                                        <p id="card-ex-pinyin" class="text-sm text-logo italic mb-1"></p>
+                                        <p id="card-ex-meaning" class="text-sm text-slate-500"></p>
+                                    </div>
                                     <div class="w-8 h-1 bg-white/50 mx-auto rounded-full mb-6"></div>
                                     <p id="card-example" class="chinese-font text-sm text-trangthai/80 italic line-clamp-3"></p>
                                     <button onclick="event.stopPropagation(); playExample()" class="mt-4 text-[#81C784] hover:text-[#2E7D32] transition-colors soft-button">
                                         <i data-lucide="volume-1" class="w-5 h-5"></i>
                                     </button>
+                                    <div id="example-edit-area" onclick="event.stopPropagation()" class="hidden space-y-2">
+                                    <input type="text"  id="user-ex-input" onclick="event.stopPropagation()" placeholder="Nhập câu tiếng Việt của bạn..." 
+                                        class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+                                    <div class="flex gap-2">
+                                        <button onclick="saveCustomExample(); event.stopPropagation()" class="flex-1 py-1 bg-green-500 text-white text-xs rounded-md font-bold">Lưu & Dịch</button>
+                                        <button onclick="toggleEditExample(); event.stopPropagation()" class="px-2 py-1 bg-slate-200 text-slate-600 text-xs rounded-md">Hủy</button>
+                                    </div>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -196,6 +221,10 @@
 
     <!-- Footer Navigation (Sticky Bottom) -->
     <nav id="nav-tabs" class="fixed bottom-6 left-0 right-0 mx-auto w-[90%] max-w-md bg-white/90 backdrop-blur-md border border-white/50 rounded-[2.5rem] shadow-2xl px-8 py-4 flex justify-between items-center z-50">
+    <button onclick="showCourseSelection()" class="flex flex-col items-center gap-1 soft-button text-slate-300">
+        <i data-lucide="undo-2" class="w-6 h-6"></i>
+        <span class="text-[10px] font-bold uppercase tracking-tighter">Quay lại</span>
+    </button>
     <button onclick="switchView('study')" id="btn-study" class="flex flex-col items-center gap-1 soft-button nav-active">
         <i data-lucide="layout-grid" class="w-6 h-6"></i>
         <span class="text-[10px] font-bold uppercase tracking-tighter">Học tập</span>
@@ -205,11 +234,8 @@
         <i data-lucide="list-video" class="w-6 h-6"></i>
         <span class="text-[10px] font-bold uppercase tracking-tighter">Danh sách</span>
     </button>
-
-    <button class="flex flex-col items-center gap-1 soft-button text-slate-300">
-        <i data-lucide="settings" class="w-6 h-6"></i>
-        <span class="text-[10px] font-bold uppercase tracking-tighter">Cài đặt</span>
-    </button>
+    
+    
 </nav>
 
     <!-- Firebase & App Scripts -->
@@ -224,10 +250,10 @@
     <script>
         // Render nút HSK bằng JS để an toàn hơn
         const levels = [
-            { id: 1, color: '#0DA574', words: '150' }, { id: 2, color: '#0DA574', words: '300' },
-            { id: 3, color: '#FFD716', words: '600' }, { id: 4, color: '#FFD716', words: '1200' },
-            { id: 5, color: '#FF8C00', words: '2500' }, { id: 6, color: '#FF8C00', words: '5000' },
-            { id: 7, color: '#073358', words: '7k+' }, { id: 8, color: '#073358', words: '9k+' }, { id: 9, color: '#073358', words: '11k+' }
+            { id: 1, color: '#0DA574', words: '500' }, { id: 2, color: '#0DA574', words: ' 1.272' },
+            { id: 3, color: '#FFD716', words: '2.245' }, { id: 4, color: '#FFD716', words: '3.245' },
+            { id: 5, color: '#FF8C00', words: '4.303' }, { id: 6, color: '#FF8C00', words: '5.456' },
+            // { id: 9, color: '#073358', words: '11k' }
         ];
 
         const grid = document.getElementById('hsk-grid');
