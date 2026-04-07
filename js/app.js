@@ -289,3 +289,52 @@ window.switchView = function (view) {
     btnStudy.classList.add("text-slate-300");
   }
 };
+window.selectCourse = function (level) {
+  console.log("Đang chọn HSK mức độ:", level);
+
+  // LƯU TRẠNG THÁI VÀO LOCALSTORAGE
+  localStorage.setItem("currentHSK", level);
+  localStorage.setItem("currentView", "study");
+  // 1. Lấy các phần tử giao diện
+  const courseSelection = document.getElementById("course-selection");
+  const mainContent = document.getElementById("main-content");
+  const mainHeader = document.getElementById("main-header");
+  const navTabs = document.getElementById("nav-tabs");
+  const labelLevel = document.getElementById("label-level");
+  const hskLabel = document.getElementById("current-hsk-label");
+
+  // 2. Cập nhật tên mức độ HSK lên giao diện
+  if (labelLevel) labelLevel.innerText = `HSK ${level}`;
+  if (hskLabel) hskLabel.innerText = `HSK ${level}`;
+
+  // 3. Ẩn hiện màn hình
+
+  if (courseSelection)
+    courseSelection.style.setProperty("display", "none", "important");
+  if (mainHeader) mainHeader.style.setProperty("display", "flex", "important");
+  if (mainContent)
+    mainContent.style.setProperty("display", "block", "important");
+  if (navTabs) navTabs.style.setProperty("display", "flex", "important");
+
+  updateUI();
+  window.scrollTo(0, 0);
+};
+window.showCourseSelection = function () {
+  // Xóa trạng thái đang học
+  localStorage.removeItem("currentView");
+  localStorage.removeItem("currentHSK");
+
+  // Hiện lại màn hình chọn
+  document
+    .getElementById("course-selection")
+    .style.setProperty("display", "block", "important");
+  document
+    .getElementById("main-content")
+    .style.setProperty("display", "none", "important");
+  document
+    .getElementById("main-header")
+    .style.setProperty("display", "none", "important");
+  document
+    .getElementById("nav-tabs")
+    .style.setProperty("display", "none", "important");
+};

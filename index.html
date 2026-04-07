@@ -7,29 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Noto+Sans+SC:wght@700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background-color: #FFFDF0; /* Vàng bơ nhạt */
-        }
-        .chinese-font {
-            font-family: 'Noto Sans SC', sans-serif;
-        }
-        /* Hiệu ứng lật thẻ 3D */
-        .card-container {
-            perspective: 1000px;
-        }
+    <link rel="stylesheet" href="./css/style.css">
+<style>
+
+
+
+        .card-container { perspective: 1000px; }
         .card-inner {
             position: relative;
             width: 100%;
             height: 100%;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.6s;
             transform-style: preserve-3d;
             cursor: pointer;
         }
-        .card-inner.flipped {
-            transform: rotateY(180deg);
-        }
+        .card-inner.flipped { transform: rotateY(180deg); }
         .card-face {
             position: absolute;
             width: 100%;
@@ -40,56 +32,36 @@
             align-items: center;
             justify-content: center;
             border-radius: 2.5rem;
-            box-shadow: 0 10px 30px -5px rgba(240, 230, 140, 0.2);
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(7, 51, 88, 0.05);
         }
-        .card-back {
-            transform: rotateY(180deg);
-        }
-        .soft-button {
-            transition: all 0.2s;
-        }
-        .soft-button:active {
-            transform: scale(0.9);
-        }
-        .nav-active {
-            color: #4CAF50 !important;
-        }
-        .nav-active i {
-            transform: translateY(-4px);
-            transition: transform 0.2s;
-        }
-        /* Tùy chỉnh thanh cuộn */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #E8F5E9;
-            border-radius: 10px;
-        }
+        .soft-button:active { transform: scale(0.95); }
     </style>
 </head>
+
+
 <body class="min-h-screen flex flex-col max-w-4xl mx-auto text-slate-800 pb-40">
 
     <!-- Header (Chỉ giữ Logo và Profile) -->
-    <nav class="sticky top-0 z-50 px-6 py-4 flex items-center justify-between bg-white/10 backdrop-blur-2xl border-b border-white/10">
+    <nav id="main-header" class="hidden sticky top-0 z-50 px-6 py-4 flex items-center justify-between bg-white/10 backdrop-blur-2xl border-b border-white/10">
     <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-[#203F9A]/20 rounded-xl flex items-center justify-center text-[#203F9A] shadow-sm">
+        <div class="w-10 h-10 bg-logo rounded-xl flex items-center justify-center text-logo shadow-sm">
             <i data-lucide="book-open" class="w-6 h-6"></i>
         </div>
         <div>
             <h1 class="font-bold text-lg leading-none text-slate-700">HSK Vocab</h1>
-            <select id="course-selector" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-transparent border-none outline-none cursor-pointer">
-                <option value="hsk1">HSK 1</option>
-            </select>
+            <button onclick="showCourseSelection()" class="text-[10px] text-logo font-bold text-slate-400 uppercase tracking-widest bg-transparent border-none outline-none cursor-pointer">
+                <span value="current-hsk-label">HSK 1</span>
+            </button>
         </div>
     </div>
     
     <div class="flex items-center gap-3">
         <div class="flex flex-col items-center gap-1">
-            <div class="w-9 h-9 rounded-full border-2 border-white shadow-sm bg-[#E7A0CC]/20 flex items-center justify-center text-[#E84797]">
+            <div class="w-9 h-9 rounded-full border-2 border-white shadow-sm bg-logo flex items-center justify-center text-logo">
                 <i data-lucide="user" class="w-5 h-5"></i>
             </div>
-            <span id="user-email-display" class="text-[9px] font-bold text-slate-400 lowercase tracking-tight leading-none">
+            <span id="user-email-display" class="text-[9px] font-bold text-slate-400 lowercase tracking-tight leading-none text-logo">
                 Guest
             </span>
         </div>
@@ -99,38 +71,60 @@
     </div>
 </nav>
 
-    <main class="flex-1 px-6 max-w-md mx-auto w-full">
+    <main class="flex-1 px-6 max-w-md mx-auto w-full h-full justify-center">
         
         <!-- Auth Container -->
-        <div id="auth-container" class="hidden py-10">
-            <div id="auth-form" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-white">
-                <h2 id="auth-title" class="text-2xl font-bold mb-8 text-center text-slate-800">Đăng nhập</h2>
-                <div class="space-y-4">
-                    <input type="email" id="email" placeholder="Email của bạn" class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-[#C8E6C9] transition-all" />
-                    <input type="password" id="password" placeholder="Mật khẩu" class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-[#C8E6C9] transition-all" />
+        <!-- 1. Màn hình Đăng nhập (Center) -->
+        <div id="auth-container" class="flex flex-col justify-center px-6 h-full min-h-screen py-10">
+            
+            <div class="bg-white p-8 rounded-[3rem] shadow-2xl border border-white w-full text-center">
+                <div class="w-20 h-20 bg-[#FFD716] rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-lg rotate-3">
+                    <i data-lucide="languages" class="w-10 h-10 text-[#073358]"></i>
                 </div>
-                <p id="auth-error" class="text-red-400 text-xs mt-4 px-2 hidden"></p>
+                <h2 id="auth-title" class="text-3xl font-bold mb-2 text-[#073358]">Xin chào!</h2>
+                <p class="text-slate-400 text-sm mb-8">Đăng nhập để bắt đầu hành trình chinh phục HSK</p>
+                
+                <div class="space-y-4">
+                    <div class="relative">
+                        <i data-lucide="mail" class="w-5 h-5 absolute left-4 top-4 text-slate-300"></i>
+                        <input type="email" id="email" placeholder="Email" class="w-full p-4 pl-12 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-[#FFD716] transition-all text-sm" />
+                    </div>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-5 h-5 absolute left-4 top-4 text-slate-300"></i>
+                        <input type="password" id="password" placeholder="Mật khẩu" class="w-full p-4 pl-12 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-[#FFD716] transition-all text-sm" />
+                    </div>
+                </div>
+                
+                <p id="auth-error" class="text-red-500 text-xs mt-4 hidden"></p>
 
-                <div id="login-actions" class="mt-8 space-y-4">
-                    <button onclick="handleLogin()" class="w-full py-4 bg-[#C8E6C9] text-[#2E7D32] rounded-2xl font-bold shadow-sm hover:bg-[#A5D6A7] transition-all soft-button">Đăng nhập</button>
-                    <p class="text-center text-xs text-slate-400 font-medium">Chưa có tài khoản? <a href="#" onclick="toggleAuth(false)" class="text-[#4CAF50] font-bold">Đăng ký</a></p>
+                <div class="mt-8 space-y-4">
+                    <button onclick="handleLogin()" class="w-full py-4 bg-[#0DA574] text-white rounded-2xl font-bold shadow-lg hover:bg-[#0b8a61] transition-all soft-button">Đăng nhập</button>
+                    <p class="text-xs text-slate-400 font-medium">Bạn mới đến? <a href="#" onclick="toggleAuth(false)" class="text-[#0DA574] font-bold">Đăng ký ngay</a></p>
                 </div>
             </div>
         </div>
-
+        <div id="course-selection" class="hidden px-6 py-10">
+            <header class="mb-8">
+                <h2 class="text-3xl font-bold text-logo mb-2">Chọn lộ trình</h2>
+                <p class="text-slate-500 text-sm italic">Bạn muốn học cấp độ nào?</p>
+            </header>
+            <div class="grid grid-cols-2 gap-4 pb-20" id="hsk-grid">
+                </div>
+        </div>
         <!-- Main Content -->
         <div id="main-content" class="hidden py-4">
             
             <!-- View Study -->
             <div id="view-study" class="space-y-10">
+            
                 <!-- Tiến độ -->
                 <div>
                     <div class="flex justify-between items-baseline mb-3">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Tiến trình học</span>
-                        <span id="progress-text" class="text-sm font-bold text-[#4CAF50]">0/500</span>
+                        <span class="text-[10px] text-logo font-bold text-slate-400 uppercase tracking-[0.2em]">Tiến trình học</span>
+                        <span id="progress-text" class="text-sm font-bold text-trangthai">0/500</span>
                     </div>
                     <div class="w-full h-2 bg-white rounded-full overflow-hidden shadow-inner">
-                        <div id="progress-bar" class="h-full bg-[#C8E6C9] rounded-full transition-all duration-700" style="width: 0%"></div>
+                        <div id="progress-bar" class="h-full bg-trangthai rounded-full transition-all duration-700" style="width: 0%"></div>
                     </div>
                 </div>
 
@@ -144,7 +138,7 @@
                         <div id="flashcard" class="card-inner" onclick="toggleFlip()">
                             <div class="card-face bg-white border-4 border-[#FFF9C4]/50">
                                 <h2 id="card-hanzi" class="chinese-font text-8xl text-slate-800 mb-6 tracking-tighter"></h2>
-                                <p id="card-pinyin" class="text-xl text-[#4CAF50] font-medium tracking-wide mb-4"></p>
+                                <p id="card-pinyin" class="text-xl text-trangthai font-medium tracking-wide mb-4"></p>
                                 <button onclick="event.stopPropagation(); playAudio()" class="text-slate-200 hover:text-[#FBC02D] transition-colors soft-button">
                                     <i data-lucide="volume-2" class="w-6 h-6"></i>
                                 </button>
@@ -154,7 +148,7 @@
                                     <p class="text-[10px] font-bold text-[#81C784] uppercase tracking-widest mb-4">Ý nghĩa</p>
                                     <p id="card-meaning_vi" class="text-3xl font-bold mb-6 leading-tight"></p>
                                     <div class="w-8 h-1 bg-white/50 mx-auto rounded-full mb-6"></div>
-                                    <p id="card-example" class="chinese-font text-sm text-[#4CAF50]/80 italic line-clamp-3"></p>
+                                    <p id="card-example" class="chinese-font text-sm text-trangthai/80 italic line-clamp-3"></p>
                                     <button onclick="event.stopPropagation(); playExample()" class="mt-4 text-[#81C784] hover:text-[#2E7D32] transition-colors soft-button">
                                         <i data-lucide="volume-1" class="w-5 h-5"></i>
                                     </button>
@@ -171,10 +165,10 @@
                 <!-- Nút Đã thuộc -->
                 <div class="flex flex-col items-center pt-2 mb-8">
                     <button onclick="markAsLearned()" class="soft-button flex flex-col items-center gap-2 group">
-                        <div class="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center text-[#4CAF50] group-hover:bg-[#E8F5E9] transition-all">
+                        <div class="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center text-trangthai group-hover:bg-[#E8F5E9] transition-all">
                             <i data-lucide="check" class="w-8 h-8"></i>
                         </div>
-                        <span class="text-[10px] font-bold text-slate-400 group-hover:text-[#4CAF50] transition-colors uppercase tracking-widest"></span>
+                        <span class="text-[10px] font-bold text-slate-400 group-hover:text-trangthai transition-colors uppercase tracking-widest"></span>
                     </button>
                 </div>
             </div>
@@ -227,6 +221,25 @@
     <script src="js/app.js"></script>
     <script src="js/auth.js"></script>
 
-    
+    <script>
+        // Render nút HSK bằng JS để an toàn hơn
+        const levels = [
+            { id: 1, color: '#0DA574', words: '150' }, { id: 2, color: '#0DA574', words: '300' },
+            { id: 3, color: '#FFD716', words: '600' }, { id: 4, color: '#FFD716', words: '1200' },
+            { id: 5, color: '#FF8C00', words: '2500' }, { id: 6, color: '#FF8C00', words: '5000' },
+            { id: 7, color: '#073358', words: '7k+' }, { id: 8, color: '#073358', words: '9k+' }, { id: 9, color: '#073358', words: '11k+' }
+        ];
+
+        const grid = document.getElementById('hsk-grid');
+        grid.innerHTML = levels.map(l => `
+            <button onclick="selectCourse(${l.id})" class="bg-white p-5 rounded-[2.5rem] shadow-sm border-b-4 border-slate-100 flex flex-col items-center gap-2">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-black text-xl" style="background-color: ${l.color}">${l.id}</div>
+                <span class="font-bold text-logo">HSK ${l.id}</span>
+                <span class="text-[9px] text-slate-400 font-bold uppercase">${l.words} từ</span>
+            </button>
+        `).join('');
+
+        lucide.createIcons();
+    </script>
 </body>
 </html>

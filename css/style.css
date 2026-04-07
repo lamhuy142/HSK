@@ -9,11 +9,42 @@
 }
 body {
   font-family: "Quicksand", sans-serif;
-  background-color: #fffdf0; /* Vàng bơ nhạt */
+  background-color: #FFD716; /* Vàng bơ nhạt */
+  color: #001F3E; /* 10% - Chữ màu xanh đen đậm */
   margin: 0;
   padding: 0;
 }
+/* Đổi màu Header và các Icon chính */
+    #main-header {
+        background-color: rgba(255, 215, 22, 0.1); /* Dùng màu #FFD716 dạng mờ */
+        border-bottom-color: rgba(7, 51, 88, 0.1);
+    }
 
+    .text-logo { color: #073358 !important; } /* Màu xanh đen cho Logo */
+    .bg-logo { background-color: rgba(7, 51, 88, 0.1) !important; }
+
+    /* 30% - Màu xanh lá cho các nút bấm và trạng thái */
+    .bg-trangthai { background-color: #0DA574 !important; color: white !important; }
+    .text-trangthai { color: #0DA574 !important; }
+    #progress-bar { background-color: #0DA574 !important; }
+    
+    /* Màu cho Card */
+    .card-face {
+        border-color: #FFD716 !important; /* Viền vàng */
+    }
+    .card-back {
+        background-color: #F0FAF7 !important; /* Xanh lá cực nhẹ cho mặt sau */
+        color: #073358 !important;
+    }
+
+    /* Thanh điều hướng dưới (Footer Nav) */
+    #nav-tabs {
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid #FFD716;
+    }
+    .nav-active {
+        color: #0DA574 !important; /* Active chuyển sang xanh lá */
+    }
 /* Đảm bảo Nav co giãn theo nội dung */
 nav {
   height: auto;
@@ -37,7 +68,9 @@ nav {
   transform-style: preserve-3d;
   cursor: pointer;
 }
-
+.card-container {
+  perspective: 1000px;
+}
 .card-front,
 .card-back {
   position: absolute;
@@ -64,6 +97,8 @@ nav {
 
 .card-face {
   position: absolute;
+  width: 100%;
+  height: 100%;
   inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden; /* Hỗ trợ Safari */
@@ -72,6 +107,8 @@ nav {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border-radius: 2.5rem;
+  box-shadow: 0 10px 30px -5px rgba(240, 230, 140, 0.2);
 }
 
 /* Mặt sau thẻ */
@@ -90,7 +127,7 @@ nav {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #e8f5e9;
   border-radius: 10px;
 }
 
@@ -102,7 +139,13 @@ nav {
 #nav-tabs {
   display: none !important;
 }
-
+.nav-active {
+  color: #4caf50 !important;
+}
+.nav-active i {
+  transform: translateY(-4px);
+  transition: transform 0.2s;
+}
 /* Khi có class "hidden" thì chắc chắn phải ẩn */
 .hidden {
   display: none !important;
@@ -120,9 +163,10 @@ nav {
   transform-style: preserve-3d;
   cursor: pointer;
 }
-.card-inner.is-flipped {
+.card-inner.flipped {
   transform: rotateY(180deg);
 }
+
 .card-front,
 .card-back {
   position: absolute;
