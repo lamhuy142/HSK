@@ -78,6 +78,7 @@ auth.onAuthStateChanged(async (user) => {
     if (mainContent)
       mainContent.style.setProperty("display", "none", "important");
     if (navTabs) navTabs.style.setProperty("display", "none", "important");
+    if (loadingScreen) loadingScreen.style.display = "none";
   }
 });
 
